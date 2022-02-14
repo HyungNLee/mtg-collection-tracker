@@ -1,7 +1,7 @@
 ﻿create table dbo.[Set]
 (
 	Id		int				identity not null,
-	[Name]	nvarchar(100)	not null,
+	[Name]	T_SetName		not null,
 
 	constraint ixuc_Set
 		primary key clustered (Id)

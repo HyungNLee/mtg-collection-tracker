@@ -57,9 +57,12 @@
   <ItemGroup>
     <Folder Include="Properties" />
     <Folder Include="Tables" />
+    <Folder Include="Procedures" />
+    <Folder Include="Types" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Local.publish.xml" />
+    <Build Include="Types\T_CardName.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Card.sql" />
@@ -67,5 +70,14 @@
     <Build Include="Tables\CardPrint.sql" />
     <Build Include="Tables\Collection.sql" />
     <Build Include="Tables\OwnedCard.sql" />
+    <Build Include="Procedures\Card_Insert.sql" />
+    <Build Include="Types\T_SetName.sql" />
+    <Build Include="Procedures\Set_Insert.sql" />
+    <Build Include="Procedures\CardPrint_Insert.sql" />
+    <Build Include="Procedures\Collection_Insert.sql" />
+    <Build Include="Procedures\OwnedCard_Insert.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="PostDeployment.sql" />
   </ItemGroup>
 </Project>

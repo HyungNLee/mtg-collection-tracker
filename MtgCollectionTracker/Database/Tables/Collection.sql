@@ -1,7 +1,7 @@
 ﻿create table dbo.[Collection]
 (
 	Id		int				identity not null,
-	[Name]	nvarchar(150)	not null,
+	[Name]	T_SetName		not null,
 	IsDeck	bit				not null,
 
 	constraint ixuc_Collection

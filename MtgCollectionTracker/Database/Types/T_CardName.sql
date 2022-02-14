@@ -1,0 +1,1 @@
+﻿create type T_CardName from nvarchar(150);
