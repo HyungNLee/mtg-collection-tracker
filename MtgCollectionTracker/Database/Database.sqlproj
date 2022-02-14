@@ -76,6 +76,9 @@
     <Build Include="Procedures\CardPrint_Insert.sql" />
     <Build Include="Procedures\Collection_Insert.sql" />
     <Build Include="Procedures\OwnedCard_Insert.sql" />
+    <Build Include="Procedures\Card_SelectBy_Name.sql" />
+    <Build Include="Procedures\Set_SelectBy_Name.sql" />
+    <Build Include="Procedures\CardPrint_SelectBy_CardId_SetId.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="PostDeployment.sql" />
