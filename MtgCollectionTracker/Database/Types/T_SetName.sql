@@ -1,0 +1,1 @@
+﻿create type T_SetName from nvarchar(100);

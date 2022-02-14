@@ -1,7 +1,7 @@
 ﻿create table dbo.[Card]
 (
 	Id		int				identity not null,
-	[Name]	nvarchar(150)	not null,
+	[Name]	T_CardName		not null,
 
 	constraint ixuc_Card
 		primary key clustered (Id)
