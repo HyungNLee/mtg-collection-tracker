@@ -1,8 +1,9 @@
 ﻿create procedure dbo.[CardPrint_Insert]
-	@CardId		int,
-	@SetId		int,
-	@PictureUrl nvarchar(max),
-	@Id			int out
+	@CardId			int,
+	@SetId			int,
+	@PictureUrl		nvarchar(max),
+	@FlipPictureUrl nvarchar(max),
+	@Id				int out
 as
 begin
 	if @CardId is null
@@ -16,8 +17,8 @@ begin
 	end
 
 
-	insert into CardPrint (CardId, SetId, PictureUrl)
-	values (@CardId, @SetId, @PictureUrl);
+	insert into CardPrint (CardId, SetId, PictureUrl, FlipPictureUrl)
+	values (@CardId, @SetId, @PictureUrl, @FlipPictureUrl);
 
 	set @Id = scope_Identity();
 end
