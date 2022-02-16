@@ -17,7 +17,7 @@
         <DataGrid
             Grid.Row="1"
             ColumnWidth="*"
-            ItemsSource="{Binding FilteredCardPrintsView}"
+            ItemsSource="{Binding FilteredCardPrints}"
             AutoGenerateColumns="False"
             IsReadOnly="True"
             SelectedItem="{Binding SelectedCardPrint}">

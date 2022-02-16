@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
@@ -50,22 +52,14 @@ namespace DesktopApp.MVVM.ViewModel
             set
             {
                 SetProperty(ref _cardPrintTextSearch, value);
-
-                if (FilteredCardPrintsView != null)
-                {
-                    FilteredCardPrintsView.Refresh();
-                }
+                FilterCardPrices();
             }
         }
 
         /// <summary>
         /// The filtered card print list.
         /// </summary>
-        private ICollectionView _filteredCardPrintsView;
-        public ICollectionView FilteredCardPrintsView
-        {
-            get { return _filteredCardPrintsView;}
-        }
+        public ObservableCollection<CardPrint> FilteredCardPrints { get; private set; }
 
         public MainViewModel()
         {
@@ -77,10 +71,7 @@ namespace DesktopApp.MVVM.ViewModel
             _cardPrintService = new CardPrintService(config);
 
             CardPrints = new ObservableCollection<CardPrint>();
-            _filteredCardPrintsView = new ListCollectionView(CardPrints)
-            {
-                Filter = new Predicate<object>(CardPrintTextFilter)
-            };
+            FilteredCardPrints = new ObservableCollection<CardPrint>();
 
             LoadCardPrintsAsync();
         }
@@ -106,26 +97,32 @@ namespace DesktopApp.MVVM.ViewModel
 
                 CardPrints.Add(cardModel);
             }
+
+            // Need this here otherwise grid won't show data on initial load.
+            FilterCardPrices();
         }
 
-        private bool CardPrintTextFilter(object item)
+        private void FilterCardPrices()
+        {
+            FilteredCardPrints.Clear();
+
+            foreach (var cardPrint in _cardPrints)
+            {
+                if (CardPrintTextFilter(cardPrint))
+                {
+                    FilteredCardPrints.Add(cardPrint);
+                }
+            }
+
+            RaisePropertyChanged(nameof(FilteredCardPrints));
+        }
+
+        private bool CardPrintTextFilter(CardPrint item)
         {
             if (string.IsNullOrEmpty(CardPrintTextSearch))
                 return true;
             else
-                return (item as CardPrint).CardName.Contains(CardPrintTextSearch, StringComparison.OrdinalIgnoreCase);
-        }
-
-        /// <summary>
-        /// Not sure why I need this but the ListCollectionView filtering does not work if this isn't here.
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged(string property)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+                return item.CardName.Contains(CardPrintTextSearch, StringComparison.OrdinalIgnoreCase);
         }
     }
 }
