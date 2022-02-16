@@ -5,9 +5,11 @@ VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Database", "Database\Database.sqlproj", "{E7B9D012-6054-42D9-B582-CE7C42546F3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardIngester", "CardIngester\CardIngester.csproj", "{C19BF87F-45A1-4BE5-85E0-E9829FB7267F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CardIngester", "CardIngester\CardIngester.csproj", "{C19BF87F-45A1-4BE5-85E0-E9829FB7267F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{664A4585-976E-448A-85B3-D4ABC60FD756}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{664A4585-976E-448A-85B3-D4ABC60FD756}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesktopApp", "DesktopApp\DesktopApp.csproj", "{75099B09-1777-479F-9009-5DC9CF00E0CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +31,10 @@ Global
 		{664A4585-976E-448A-85B3-D4ABC60FD756}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{664A4585-976E-448A-85B3-D4ABC60FD756}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{664A4585-976E-448A-85B3-D4ABC60FD756}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75099B09-1777-479F-9009-5DC9CF00E0CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75099B09-1777-479F-9009-5DC9CF00E0CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75099B09-1777-479F-9009-5DC9CF00E0CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75099B09-1777-479F-9009-5DC9CF00E0CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
