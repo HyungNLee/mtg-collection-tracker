@@ -82,6 +82,7 @@
     <Build Include="Procedures\vw_CardPrintDetails_SelectBy_CardId_SetId.sql" />
     <Build Include="Views\vw_CardPrintDetails.sql" />
     <Build Include="Procedures\vw_CardPrintDetails_Select.sql" />
+    <Build Include="Views\ivw_OwnedCardSum.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="PostDeployment.sql" />

@@ -14,7 +14,6 @@ begin
 		raiserror('@IsDeck cannot be null', 18, 1);
 	end
 
-
 	insert into [Collection] ([Name], IsDeck)
 	values (@Name, @IsDeck);
 
