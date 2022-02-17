@@ -9,7 +9,15 @@ namespace DataAccess.Services
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task<int> AddOwnedCardAsync(AddOwnedCardRequest request);
+        Task<int> AddOwnedCardAsync(OwnedCardRequest request);
+
+        /// <summary>
+        /// Deletes the given number of matching card prints in the given set.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="numberToDelete"></param>
+        /// <returns></returns>
+        Task DeleteOwnedCardsAsync(OwnedCardRequest request, int numberToDelete);
 
         /// <summary>
         /// Gets all collections.

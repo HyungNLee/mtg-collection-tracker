@@ -116,7 +116,31 @@ namespace DesktopApp.MVVM.ViewModel
         {
             get
             {
-                var request = new DelegateCommand(() => AddCurrentlySelectedCard());
+                var request = new DelegateCommand(() => AddCurrentlySelectedCardAsync());
+                return request;
+            }
+        }
+
+        /// <summary>
+        /// Used by the DataGrid to delete a single instance of selected owned card.
+        /// </summary>
+        public ICommand DeleteSingleSelectedOwnedCard
+        {
+            get
+            {
+                var request = new DelegateCommand(() => DeleteSelectedOwnedCardAsync());
+                return request;
+            }
+        }
+
+        /// <summary>
+        /// Used by the DataGrid to delete a single instance of selected owned card.
+        /// </summary>
+        public ICommand DeleteAllSelectedOwnedCard
+        {
+            get
+            {
+                var request = new DelegateCommand(() => DeleteSelectedOwnedCardAsync(true));
                 return request;
             }
         }
@@ -182,7 +206,11 @@ namespace DesktopApp.MVVM.ViewModel
             RaisePropertyChanged(nameof(OwnedCards));
         }
 
-        private async Task AddCurrentlySelectedCard()
+        /// <summary>
+        /// Adds an instance of the currently selected owned card.
+        /// </summary>
+        /// <returns></returns>
+        private async Task AddCurrentlySelectedCardAsync()
         {
             if (SelectedOwnedCard == null)
             {
@@ -198,7 +226,7 @@ namespace DesktopApp.MVVM.ViewModel
         /// <returns></returns>
         private async Task AddOwnedCardAsync(int cardPrintId, int collectionId, bool isFoil = false)
         {
-            var newRequest = new DataAccessModels.AddOwnedCardRequest
+            var newRequest = new DataAccessModels.OwnedCardRequest
             {
                 CardPrintId = cardPrintId,
                 CollectionId = collectionId,
@@ -215,6 +243,39 @@ namespace DesktopApp.MVVM.ViewModel
                 return;
             }
             await LoadOwnedCardsByCollection();
+        }
+
+        /// <summary>
+        /// Deletes either a single or all of the currently selected owned card.
+        /// </summary>
+        /// <param name="numberToDelete"></param>
+        /// <returns></returns>
+        private async Task DeleteSelectedOwnedCardAsync(bool deleteAll = false)
+        {
+            if (SelectedOwnedCard == null)
+            {
+                return;
+            }
+
+            var request = new DataAccessModels.OwnedCardRequest
+            {
+                CardPrintId = SelectedOwnedCard.CardPrintId,
+                CollectionId = SelectedCollection.Id,
+                IsFoil = SelectedOwnedCard.IsFoil
+            };
+
+            var numberToDelete = deleteAll ? SelectedOwnedCard.Count : 1;
+
+            await _collectionService.DeleteOwnedCardsAsync(request, numberToDelete);
+
+            if (deleteAll || SelectedOwnedCard.Count == 1)
+            {
+                OwnedCards.Remove(SelectedOwnedCard);
+                SelectedOwnedCard = null;
+                return;
+            }
+
+            SelectedOwnedCard.Count--;
         }
     }
 }

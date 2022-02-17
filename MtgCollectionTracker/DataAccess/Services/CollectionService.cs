@@ -18,7 +18,7 @@ namespace DataAccess.Services
             _config = config.Value;
         }
 
-        public async Task<int> AddOwnedCardAsync(AddOwnedCardRequest request)
+        public async Task<int> AddOwnedCardAsync(OwnedCardRequest request)
         {
             var storedProcedure = "OwnedCard_Insert";
 
@@ -38,10 +38,34 @@ namespace DataAccess.Services
             }
             catch (Exception ex)
             {
-
+                // TODO: Logging
             }
 
             return parameters.Get<int>("@Id");
+        }
+
+        public async Task DeleteOwnedCardsAsync(OwnedCardRequest request, int numberToDelete)
+        {
+            var storedProcedure = "OwnedCard_Delete_Multiple";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@CardPrintId", request.CardPrintId);
+            parameters.Add("@CollectionId", request.CollectionId);
+            parameters.Add("@IsFoil", request.IsFoil);
+            parameters.Add("@NumberToDelete", numberToDelete);
+
+            try
+            {
+                using IDbConnection dbConnection = new SqlConnection(_config.ConnectionString);
+                await dbConnection.ExecuteAsync(
+                    sql: storedProcedure,
+                    param: parameters,
+                    commandType: CommandType.StoredProcedure);
+            }
+            catch (Exception ex)
+            {
+                // TODO: Logging
+            }
         }
 
         public async Task<IEnumerable<CardCollection>> GetCollectionsAsync()

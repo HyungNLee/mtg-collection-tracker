@@ -22,6 +22,11 @@
             <DataGrid.InputBindings>
                 <KeyBinding Key="Add" Command="{Binding AddOwnedCardCommand}"/>
                 <KeyBinding Key="OemPlus" Command="{Binding AddOwnedCardCommand}"/>
+
+                <KeyBinding Key="Subtract" Command="{Binding DeleteSingleSelectedOwnedCard}"/>
+                <KeyBinding Key="OemMinus" Command="{Binding DeleteSingleSelectedOwnedCard}"/>
+                <KeyBinding Key="Delete" Command="{Binding DeleteAllSelectedOwnedCard}"/>
+
             </DataGrid.InputBindings>
 
             <DataGrid.Columns>

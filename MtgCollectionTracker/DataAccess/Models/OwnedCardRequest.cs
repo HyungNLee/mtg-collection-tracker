@@ -1,6 +1,6 @@
 ﻿namespace DataAccess.Models
 {
-    public class AddOwnedCardRequest
+    public class OwnedCardRequest
     {
         public int CardPrintId { get; set; }
         public int CollectionId { get; set; }
