@@ -107,13 +107,25 @@ namespace DesktopApp.MVVM.ViewModel
         }
 
         /// <summary>
-        /// Used by the DataGrid keybind to add new cards.
+        /// Used by the DataGrid keybind to add new non-foil cards.
         /// </summary>
         public ICommand AddOwnedCardCommand
         {
             get
             {
                 var request = new DelegateCommand(() => AddOwnedCardRequestAsync());
+                return request;
+            }
+        }
+
+        /// <summary>
+        /// Used by the DataGrid keybind to add new foil cards.
+        /// </summary>
+        public ICommand AddFoilOwnedCardCommand
+        {
+            get
+            {
+                var request = new DelegateCommand(() => AddOwnedCardRequestAsync(true));
                 return request;
             }
         }
@@ -148,14 +160,14 @@ namespace DesktopApp.MVVM.ViewModel
         /// Publishes an AddOwnedCardRequestEvent to add a new owned card.
         /// </summary>
         /// <returns></returns>
-        private async Task AddOwnedCardRequestAsync()
+        private async Task AddOwnedCardRequestAsync(bool isFoil = false)
         {
             if (SelectedCardPrint == null)
             {
                 return;
             }
 
-            var request = new AddOwnedCardRequestEvent(SelectedCardPrint.Id);
+            var request = new AddOwnedCardRequestEvent(SelectedCardPrint.Id, isFoil);
             ApplicationEventManager.Instance.Publish(request);
         }
     }

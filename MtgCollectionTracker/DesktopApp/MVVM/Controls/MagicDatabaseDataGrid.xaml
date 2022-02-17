@@ -25,7 +25,9 @@
 
             <DataGrid.InputBindings>
                 <KeyBinding Key="Add" Command="{Binding AddOwnedCardCommand}"/>
+                <KeyBinding Modifiers="Shift"  Key="Add" Command="{Binding AddFoilOwnedCardCommand}"/>
                 <KeyBinding Key="OemPlus" Command="{Binding AddOwnedCardCommand}"/>
+                <KeyBinding Modifiers="Shift" Key="OemPlus" Command="{Binding AddFoilOwnedCardCommand}"/>
             </DataGrid.InputBindings>
             
             <DataGrid.Columns>
