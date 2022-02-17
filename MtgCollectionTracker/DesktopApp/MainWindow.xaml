@@ -1,0 +1,43 @@
+﻿<Window x:Class="DesktopApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DesktopApp"
+        xmlns:viewmodel="clr-namespace:DesktopApp.MVVM.ViewModel"
+        xmlns:controls="clr-namespace:DesktopApp.MVVM.Controls"
+        xmlns:view="clr-namespace:DesktopApp.MVVM.View"
+        mc:Ignorable="d"
+        Title="MTG Collection Tracker"
+        Height="1000"
+        Width="1200"
+        ResizeMode="CanResizeWithGrip">
+
+    <Window.DataContext>
+        <viewmodel:MainViewModel />
+    </Window.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="500"/>
+        </Grid.ColumnDefinitions>
+
+        <Frame Grid.Row="1" Grid.Column="0">
+            <Frame.Content>
+                <view:MagicDatabaseView />
+            </Frame.Content>
+        </Frame>
+
+        <Frame Grid.Row="0" Grid.Column="1">
+            <Frame.Content>
+                <view:SelectedCardPrintView />
+            </Frame.Content>
+        </Frame>
+    </Grid>
+</Window>

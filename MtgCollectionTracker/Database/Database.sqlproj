@@ -59,6 +59,7 @@
     <Folder Include="Tables" />
     <Folder Include="Procedures" />
     <Folder Include="Types" />
+    <Folder Include="Views" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Local.publish.xml" />
@@ -78,7 +79,9 @@
     <Build Include="Procedures\OwnedCard_Insert.sql" />
     <Build Include="Procedures\Card_SelectBy_Name.sql" />
     <Build Include="Procedures\Set_SelectBy_Name.sql" />
-    <Build Include="Procedures\CardPrint_SelectBy_CardId_SetId.sql" />
+    <Build Include="Procedures\vw_CardPrintDetails_SelectBy_CardId_SetId.sql" />
+    <Build Include="Views\vw_CardPrintDetails.sql" />
+    <Build Include="Procedures\vw_CardPrintDetails_Select.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="PostDeployment.sql" />

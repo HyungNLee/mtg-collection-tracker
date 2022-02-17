@@ -1,4 +1,4 @@
-﻿create procedure dbo.CardPrint_SelectBy_CardId_SetId
+﻿create procedure dbo.vw_CardPrintDetails_SelectBy_CardId_SetId
 	@CardId int,
 	@SetId int
 as
@@ -15,7 +15,7 @@ begin
 
 	select
 		*
-	from CardPrint
+	from vw_CardPrintDetails
 	where
 		CardId = @CardId
 		and SetId = @SetId;
