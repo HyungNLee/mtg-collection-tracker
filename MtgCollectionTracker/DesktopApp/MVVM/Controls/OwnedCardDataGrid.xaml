@@ -19,6 +19,11 @@
             SelectionMode="Single"
             SelectedItem="{Binding SelectedOwnedCard}">
 
+            <DataGrid.InputBindings>
+                <KeyBinding Key="Add" Command="{Binding AddOwnedCardCommand}"/>
+                <KeyBinding Key="OemPlus" Command="{Binding AddOwnedCardCommand}"/>
+            </DataGrid.InputBindings>
+
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding CardName}" />
                 <DataGridTextColumn Header="Set" Binding="{Binding SetName}" />

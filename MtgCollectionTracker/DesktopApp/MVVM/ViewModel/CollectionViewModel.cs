@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 using DataAccess.Services;
 
@@ -13,6 +11,7 @@ using DesktopApp.MVVM.Model;
 
 using Microsoft.Extensions.Options;
 
+using Prism.Commands;
 using Prism.Mvvm;
 
 using DataAccessModels = DataAccess.Models;
@@ -111,6 +110,18 @@ namespace DesktopApp.MVVM.ViewModel
         }
 
         /// <summary>
+        /// Used by the DataGrid keybind to add new cards.
+        /// </summary>
+        public ICommand AddOwnedCardCommand
+        {
+            get
+            {
+                var request = new DelegateCommand(() => AddCurrentlySelectedCard());
+                return request;
+            }
+        }
+
+        /// <summary>
         /// Loads all collections.
         /// </summary>
         /// <returns></returns>
@@ -171,6 +182,16 @@ namespace DesktopApp.MVVM.ViewModel
             RaisePropertyChanged(nameof(OwnedCards));
         }
 
+        private async Task AddCurrentlySelectedCard()
+        {
+            if (SelectedOwnedCard == null)
+            {
+                return;
+            }
+
+            await AddOwnedCardAsync(SelectedOwnedCard.CardPrintId, SelectedCollection.Id, SelectedOwnedCard.IsFoil);
+        }
+
         /// <summary>
         /// Adds a new non-foil version of a card.
         /// </summary>
@@ -186,6 +207,13 @@ namespace DesktopApp.MVVM.ViewModel
 
             await _collectionService.AddOwnedCardAsync(newRequest);
 
+            // If card already exists in the list, don't refresh the whole list. Just update the count property.
+            var foundCard = OwnedCards.FirstOrDefault(card => card.CardPrintId == cardPrintId);
+            if (foundCard != null)
+            {
+                foundCard.Count++;
+                return;
+            }
             await LoadOwnedCardsByCollection();
         }
     }
