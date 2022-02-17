@@ -4,7 +4,7 @@
              xmlns:viewmodel="clr-namespace:DesktopApp.MVVM.ViewModel"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             d:DataContext="{d:DesignInstance Type=viewmodel:MainViewModel}"
+             d:DataContext="{d:DesignInstance Type=viewmodel:MagicDatabaseViewModel}"
              mc:Ignorable="d">
     <Grid>
 
@@ -20,6 +20,7 @@
             ItemsSource="{Binding FilteredCardPrints}"
             AutoGenerateColumns="False"
             IsReadOnly="True"
+            SelectionMode="Single"
             SelectedItem="{Binding SelectedCardPrint}">
             
             <DataGrid.Columns>

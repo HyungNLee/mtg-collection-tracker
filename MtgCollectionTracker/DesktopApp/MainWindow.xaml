@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:DesktopApp"
         xmlns:viewmodel="clr-namespace:DesktopApp.MVVM.ViewModel"
         xmlns:controls="clr-namespace:DesktopApp.MVVM.Controls"
+        xmlns:view="clr-namespace:DesktopApp.MVVM.View"
         mc:Ignorable="d"
         Title="MTG Collection Tracker"
         Height="1000"
@@ -27,7 +28,16 @@
             <ColumnDefinition Width="500"/>
         </Grid.ColumnDefinitions>
 
-        <controls:MagicDatabaseDataGrid Grid.Row="1"/>
-        <controls:SelectedCardControl Grid.Row="0" Grid.Column="1"/>
+        <Frame Grid.Row="1" Grid.Column="0">
+            <Frame.Content>
+                <view:MagicDatabaseView />
+            </Frame.Content>
+        </Frame>
+
+        <Frame>
+            <Frame.Content>
+                <view:SelectedCardPrintView />
+            </Frame.Content>
+        </Frame>
     </Grid>
 </Window>
