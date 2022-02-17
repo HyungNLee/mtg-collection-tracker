@@ -34,7 +34,7 @@
             </Frame.Content>
         </Frame>
 
-        <Frame>
+        <Frame Grid.Row="0" Grid.Column="1">
             <Frame.Content>
                 <view:SelectedCardPrintView />
             </Frame.Content>

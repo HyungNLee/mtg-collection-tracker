@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 
 using DataAccess.Services;
 
+using DesktopApp.Event;
+using DesktopApp.Event.EventModels;
 using DesktopApp.MVVM.Model;
 
 using Microsoft.Extensions.Options;
@@ -35,7 +37,11 @@ namespace DesktopApp.MVVM.ViewModel
         public CardPrint SelectedCardPrint
         {
             get { return _selectedCardPrint; }
-            set { SetProperty(ref _selectedCardPrint, value); }
+            set
+            {
+                SetProperty(ref _selectedCardPrint, value);
+                ApplicationEventManager.Instance.Publish(new CardPrintSelectedEvent(_selectedCardPrint));
+            }
         }
 
         /// <summary>
