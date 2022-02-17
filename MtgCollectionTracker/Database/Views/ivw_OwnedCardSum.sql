@@ -13,9 +13,11 @@ as
 		IsFoil;
 go
 
-create unique clustered index ixuc_ivw_OwnedCardSum
-	on ivw_OwnedCardSum(CollectionId);
+create unique clustered index ixuc_ivw_OwnedCardSum_CardPrintId
+	on ivw_OwnedCardSum(CardPrintId);
+
 go
 
-create unique index ixu_ivw_OwnedCardSum_CardPrintId
-	on ivw_OwnedCardSum(CardPrintId);
+create index ix_ivw_OwnedCardSum
+	on ivw_OwnedCardSum(CollectionId);
+

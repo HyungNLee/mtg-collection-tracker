@@ -18,6 +18,32 @@ namespace DataAccess.Services
             _config = config.Value;
         }
 
+        public async Task<int> AddOwnedCardAsync(AddOwnedCardRequest request)
+        {
+            var storedProcedure = "OwnedCard_Insert";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@CardPrintId", request.CardPrintId);
+            parameters.Add("@CollectionId", request.CollectionId);
+            parameters.Add("@IsFoil", request.IsFoil);
+            parameters.Add("@Id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
+
+            try
+            {
+                using IDbConnection dbConnection = new SqlConnection(_config.ConnectionString);
+                await dbConnection.ExecuteAsync(
+                    sql: storedProcedure,
+                    param: parameters,
+                    commandType: CommandType.StoredProcedure);
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return parameters.Get<int>("@Id");
+        }
+
         public async Task<IEnumerable<CardCollection>> GetCollectionsAsync()
         {
             var storedProcedure = "Collection_Select";

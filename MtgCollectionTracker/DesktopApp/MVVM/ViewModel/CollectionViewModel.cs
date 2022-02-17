@@ -68,16 +68,19 @@ namespace DesktopApp.MVVM.ViewModel
             {
                 SetProperty(ref _selectedOwnedCard, value);
 
-                ApplicationEventManager.Instance.Publish(
-                    new CardPrintSelectedEvent(
-                        new CardPrint
-                        {
-                            BackPictureUrl = _selectedOwnedCard.BackPictureUrl,
-                            CardName = _selectedOwnedCard.CardName,
-                            FrontPictureUrl = _selectedOwnedCard.FrontPictureUrl,
-                            Id = _selectedOwnedCard.CardPrintId,
-                            SetName = _selectedOwnedCard.SetName,
-                        }));
+                if (value != null)
+                {
+                    ApplicationEventManager.Instance.Publish(
+                        new CardPrintSelectedEvent(
+                            new CardPrint
+                            {
+                                BackPictureUrl = _selectedOwnedCard.BackPictureUrl,
+                                CardName = _selectedOwnedCard.CardName,
+                                FrontPictureUrl = _selectedOwnedCard.FrontPictureUrl,
+                                Id = _selectedOwnedCard.CardPrintId,
+                                SetName = _selectedOwnedCard.SetName,
+                            }));
+                }
             }
         }
 
@@ -94,6 +97,17 @@ namespace DesktopApp.MVVM.ViewModel
             OwnedCards = new ObservableCollection<OwnedCardPrintAggregate>();
 
             LoadCollectionsAsync();
+
+            // Event subscribing
+            ApplicationEventManager.Instance.Subscribe<AddOwnedCardRequestEvent>(args =>
+            {
+                if (SelectedCollection == null)
+                {
+                    return;
+                }
+
+                AddOwnedCardAsync(args.CardPrintId, SelectedCollection.Id, args.IsFoil);
+            });
         }
 
         /// <summary>
@@ -155,6 +169,24 @@ namespace DesktopApp.MVVM.ViewModel
             }
 
             RaisePropertyChanged(nameof(OwnedCards));
+        }
+
+        /// <summary>
+        /// Adds a new non-foil version of a card.
+        /// </summary>
+        /// <returns></returns>
+        private async Task AddOwnedCardAsync(int cardPrintId, int collectionId, bool isFoil = false)
+        {
+            var newRequest = new DataAccessModels.AddOwnedCardRequest
+            {
+                CardPrintId = cardPrintId,
+                CollectionId = collectionId,
+                IsFoil = isFoil
+            };
+
+            await _collectionService.AddOwnedCardAsync(newRequest);
+
+            await LoadOwnedCardsByCollection();
         }
     }
 }
