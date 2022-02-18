@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -85,6 +86,25 @@ namespace DesktopApp.MVVM.ViewModel
             }
         }
 
+        /// <summary>
+        /// The current text in the text search box.
+        /// </summary>
+        private string _cardTextSearch;
+        public string CardTextSearch
+        {
+            get { return _cardTextSearch; }
+            set
+            {
+                SetProperty(ref _cardTextSearch, value);
+                FilterOwnedCards();
+            }
+        }
+
+        /// <summary>
+        /// The filtered card print list.
+        /// </summary>
+        public ObservableCollection<OwnedCardPrintAggregate> FilteredOwnedCards { get; private set; }
+
         public CollectionViewModel()
         {
             var dataAccessConfig = new DataAccessModels.DataAccessConfig
@@ -96,6 +116,7 @@ namespace DesktopApp.MVVM.ViewModel
 
             Collections = new ObservableCollection<CardCollection>();
             OwnedCards = new ObservableCollection<OwnedCardPrintAggregate>();
+            FilteredOwnedCards = new ObservableCollection<OwnedCardPrintAggregate>();
 
             LoadCollectionsAsync();
 
@@ -212,7 +233,11 @@ namespace DesktopApp.MVVM.ViewModel
                 OwnedCards.Add(newOwnedCard);
             }
 
-            RaisePropertyChanged(nameof(OwnedCards));
+
+            // Need this here otherwise grid won't show data on initial load.
+            FilterOwnedCards();
+
+            //RaisePropertyChanged(nameof(OwnedCards));
         }
 
         /// <summary>
@@ -287,6 +312,7 @@ namespace DesktopApp.MVVM.ViewModel
             if (deleteAll || SelectedOwnedCard.Count == 1)
             {
                 OwnedCards.Remove(SelectedOwnedCard);
+                FilteredOwnedCards.Remove(SelectedOwnedCard);
                 SelectedOwnedCard = null;
                 return;
             }
@@ -323,6 +349,32 @@ namespace DesktopApp.MVVM.ViewModel
             };
 
             Collections.Add(newCollection);
+        }
+
+        /// <summary>
+        /// Clears and adds card prints that match the filter into the FilteredOwnedCards collection
+        /// </summary>
+        private void FilterOwnedCards()
+        {
+            FilteredOwnedCards.Clear();
+
+            foreach (var cardPrint in OwnedCards)
+            {
+                if (CardTextFilter(cardPrint))
+                {
+                    FilteredOwnedCards.Add(cardPrint);
+                }
+            }
+
+            RaisePropertyChanged(nameof(FilteredOwnedCards));
+        }
+
+        private bool CardTextFilter(OwnedCardPrintAggregate item)
+        {
+            if (string.IsNullOrEmpty(CardTextSearch))
+                return true;
+            else
+                return item.CardName.Contains(CardTextSearch, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

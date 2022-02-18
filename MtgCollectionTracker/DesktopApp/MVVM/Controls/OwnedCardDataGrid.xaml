@@ -10,10 +10,16 @@
              d:DataContext="{d:DesignInstance Type=viewmodel:CollectionViewModel}">
     <Grid>
 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <TextBox Grid.Row="0" Text="{Binding CardTextSearch, UpdateSourceTrigger=PropertyChanged}"/>
         <DataGrid
-            Grid.Row="0"
+            Grid.Row="1"
             ColumnWidth="*"
-            ItemsSource="{Binding OwnedCards}"
+            ItemsSource="{Binding FilteredOwnedCards}"
             AutoGenerateColumns="False"
             IsReadOnly="True"
             SelectionMode="Single"
