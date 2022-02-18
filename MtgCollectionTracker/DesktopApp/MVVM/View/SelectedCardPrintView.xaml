@@ -15,6 +15,14 @@
     </Page.DataContext>
 
     <Grid>
-        <controls:SelectedCardControl />
+
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <controls:SelectedCardControl Grid.Row="0"/>
+        <controls:SelectedCardAllOwnedDataGrid Grid.Row="1"/>
+        
     </Grid>
 </Page>

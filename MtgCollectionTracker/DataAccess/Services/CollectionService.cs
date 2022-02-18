@@ -107,7 +107,31 @@ namespace DataAccess.Services
             return foundCollections ?? Enumerable.Empty<CardCollection>();
         }
 
-        public async Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesAsync(int collectionId)
+        public async Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesAsyncByCardId(int cardId)
+        {
+            var storedProcedure = "ivw_OwnedCardSum_Details_SelectBy_CardId";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@CardId", cardId);
+
+            IEnumerable<OwnedCardPrintAggregate> foundCollections = null;
+            try
+            {
+                using IDbConnection dbConnection = new SqlConnection(_config.ConnectionString);
+                foundCollections = await dbConnection.QueryAsync<OwnedCardPrintAggregate>(
+                    sql: storedProcedure,
+                    param: parameters,
+                    commandType: CommandType.StoredProcedure);
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return foundCollections ?? Enumerable.Empty<OwnedCardPrintAggregate>();
+        }
+
+        public async Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesAsyncByCollectionId(int collectionId)
         {
             var storedProcedure = "ivw_OwnedCardSum_Details_SelectBy_CollectionId";
 

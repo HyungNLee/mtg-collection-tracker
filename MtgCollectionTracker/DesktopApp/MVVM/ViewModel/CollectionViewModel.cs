@@ -78,6 +78,8 @@ namespace DesktopApp.MVVM.ViewModel
                                 FrontPictureUrl = _selectedOwnedCard.FrontPictureUrl,
                                 Id = _selectedOwnedCard.CardPrintId,
                                 SetName = _selectedOwnedCard.SetName,
+                                SetId = _selectedOwnedCard.SetId,
+                                CardId  = _selectedOwnedCard.CardId,
                             }));
                 }
             }
@@ -97,7 +99,8 @@ namespace DesktopApp.MVVM.ViewModel
 
             LoadCollectionsAsync();
 
-            // Event subscribing
+            // ** Event subscribing **
+            // Add new card event is received.
             ApplicationEventManager.Instance.Subscribe<AddOwnedCardRequestEvent>(async args =>
             {
                 if (SelectedCollection == null)
@@ -108,6 +111,7 @@ namespace DesktopApp.MVVM.ViewModel
                 await AddOwnedCardAsync(args.CardPrintId, SelectedCollection.Id, args.IsFoil);
             });
 
+            // Create new non-sideboard collection event is received.
             ApplicationEventManager.Instance.Subscribe<CreateCollectionRequestEvent>(async args =>
             {
                 await AddCollectionAsync(args.Name, args.IsDeck);
@@ -186,7 +190,7 @@ namespace DesktopApp.MVVM.ViewModel
 
             OwnedCards.Clear();
 
-            var ownedCards = await _collectionService.GetOwnedCardsAggregatesAsync(SelectedCollection.Id);
+            var ownedCards = await _collectionService.GetOwnedCardsAggregatesAsyncByCollectionId(SelectedCollection.Id);
 
             foreach (var card in ownedCards)
             {
@@ -240,6 +244,9 @@ namespace DesktopApp.MVVM.ViewModel
 
             await _collectionService.AddOwnedCardAsync(newRequest);
 
+            var cardOperationSuccessEvent = new CardOperationSuccessEvent(cardPrintId, 1, CardOperation.Add);
+            ApplicationEventManager.Instance.Publish(cardOperationSuccessEvent);
+
             // If card already exists in the list, don't refresh the whole list. Just update the count property.
             var foundCard = OwnedCards.FirstOrDefault(card => card.CardPrintId == cardPrintId);
             if (foundCard != null)
@@ -247,6 +254,7 @@ namespace DesktopApp.MVVM.ViewModel
                 foundCard.Count++;
                 return;
             }
+
             await LoadOwnedCardsByCollection();
         }
 
@@ -272,6 +280,9 @@ namespace DesktopApp.MVVM.ViewModel
             var numberToDelete = deleteAll ? SelectedOwnedCard.Count : 1;
 
             await _collectionService.DeleteOwnedCardsAsync(request, numberToDelete);
+
+            var cardOperationSuccessEvent = new CardOperationSuccessEvent(SelectedOwnedCard.CardPrintId, numberToDelete, CardOperation.Delete);
+            ApplicationEventManager.Instance.Publish(cardOperationSuccessEvent);
 
             if (deleteAll || SelectedOwnedCard.Count == 1)
             {
