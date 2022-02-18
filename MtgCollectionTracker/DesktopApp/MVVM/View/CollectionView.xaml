@@ -19,11 +19,16 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="350" />
+            <ColumnDefinition Width="5" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
         <controls:CollectionDataGrid Grid.Column="0"/>
-        <controls:OwnedCardDataGrid Grid.Column="1"/>
+
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+
+        <controls:OwnedCardDataGrid Grid.Column="2"/>
+        
     </Grid>
 </Page>
