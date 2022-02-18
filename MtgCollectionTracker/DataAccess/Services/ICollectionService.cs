@@ -32,9 +32,16 @@ namespace DataAccess.Services
         Task<IEnumerable<CardCollection>> GetCollectionsAsync();
 
         /// <summary>
+        /// Gets the aggregate owned details by card Id.
+        /// </summary>
+        /// <param name="cardId"></param>
+        /// <returns>Returns a collection. If no entries are found, will return an empty collection.</returns>
+        Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesAsyncByCardId(int cardId);
+
+        /// <summary>
         /// Gets the aggregate owned card details by collection Id.
         /// </summary>
         /// <returns>Returns a collection. If no entries are found, will return an empty collection.</returns>
-        Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesAsync(int collectionId);
+        Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesAsyncByCollectionId(int collectionId);
     }
 }

@@ -96,7 +96,9 @@ namespace DesktopApp.MVVM.ViewModel
                     CardName = cardPrint.CardName,
                     FrontPictureUrl = cardPrint.PictureUrl,
                     Id = cardPrint.Id,
-                    SetName = cardPrint.SetName
+                    SetName = cardPrint.SetName,
+                    CardId = cardPrint.CardId,
+                    SetId = cardPrint.SetId
                 };
 
                 CardPrints.Add(cardModel);
