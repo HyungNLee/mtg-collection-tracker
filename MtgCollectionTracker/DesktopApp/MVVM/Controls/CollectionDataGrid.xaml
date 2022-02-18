@@ -1,0 +1,40 @@
+﻿<UserControl x:Class="DesktopApp.MVVM.Controls.CollectionDataGrid"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DesktopApp.MVVM.Controls"
+             xmlns:viewmodel="clr-namespace:DesktopApp.MVVM.ViewModel"
+             mc:Ignorable="d" 
+             d:DesignHeight="450"
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=viewmodel:CollectionViewModel}">
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Button Grid.Row="0"
+            x:Name="btnAddCollectionDialog"
+            ClickMode="Release"
+            Click="btnAddCollectionDialog_Click">Add Collection</Button>
+
+        <DataGrid
+            Grid.Row="1"
+            ColumnWidth="*"
+            ItemsSource="{Binding Collections}"
+            AutoGenerateColumns="False"
+            IsReadOnly="True"
+            SelectionMode="Single"
+            SelectedItem="{Binding SelectedCollection}">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+            </DataGrid.Columns>
+
+        </DataGrid>
+
+    </Grid>
+</UserControl>

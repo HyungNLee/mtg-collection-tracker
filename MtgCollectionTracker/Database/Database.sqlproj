@@ -82,6 +82,10 @@
     <Build Include="Procedures\vw_CardPrintDetails_SelectBy_CardId_SetId.sql" />
     <Build Include="Views\vw_CardPrintDetails.sql" />
     <Build Include="Procedures\vw_CardPrintDetails_Select.sql" />
+    <Build Include="Views\ivw_OwnedCardSum.sql" />
+    <Build Include="Procedures\Collection_Select.sql" />
+    <Build Include="Procedures\ivw_OwnedCardSum_Details_SelectBy_CollectionId.sql" />
+    <Build Include="Procedures\OwnedCard_Delete_Multiple.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="PostDeployment.sql" />

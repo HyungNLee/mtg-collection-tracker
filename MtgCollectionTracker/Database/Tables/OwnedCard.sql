@@ -3,6 +3,7 @@
 	Id				int		identity not null,
 	CardPrintId		int		not null,
 	CollectionId	int		not null,
+	IsFoil			bit		not null
 
 	constraint ixuc_OwnedCard
 		primary key clustered (Id),

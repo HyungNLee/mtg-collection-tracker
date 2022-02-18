@@ -10,7 +10,7 @@
         mc:Ignorable="d"
         Title="MTG Collection Tracker"
         Height="1000"
-        Width="1200"
+        Width="1400"
         ResizeMode="CanResizeWithGrip">
 
     <Window.DataContext>
@@ -25,12 +25,12 @@
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
-            <ColumnDefinition Width="500"/>
+            <ColumnDefinition Width="400"/>
         </Grid.ColumnDefinitions>
 
-        <Frame Grid.Row="1" Grid.Column="0">
+        <Frame Grid.Row="0" Grid.Column="0">
             <Frame.Content>
-                <view:MagicDatabaseView />
+                <view:CollectionView />
             </Frame.Content>
         </Frame>
 
@@ -39,5 +39,12 @@
                 <view:SelectedCardPrintView />
             </Frame.Content>
         </Frame>
+        
+        <Frame Grid.Row="1" Grid.Column="0">
+            <Frame.Content>
+                <view:MagicDatabaseView />
+            </Frame.Content>
+        </Frame>
+
     </Grid>
 </Window>
