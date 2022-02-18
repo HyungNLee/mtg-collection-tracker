@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 using DataAccess.Services;
@@ -105,6 +106,11 @@ namespace DesktopApp.MVVM.ViewModel
         /// </summary>
         public ObservableCollection<OwnedCardPrintAggregate> FilteredOwnedCards { get; private set; }
 
+        /// <summary>
+        /// Command to create a new sideboard.
+        /// </summary>
+        public DelegateCommand AddSideboardCommand { get; set; }
+
         public CollectionViewModel()
         {
             var dataAccessConfig = new DataAccessModels.DataAccessConfig
@@ -117,6 +123,8 @@ namespace DesktopApp.MVVM.ViewModel
             Collections = new ObservableCollection<CardCollection>();
             OwnedCards = new ObservableCollection<OwnedCardPrintAggregate>();
             FilteredOwnedCards = new ObservableCollection<OwnedCardPrintAggregate>();
+
+            AddSideboardCommand = new DelegateCommand(async () => await AddSideboardAsync());
 
             LoadCollectionsAsync();
 
@@ -176,11 +184,29 @@ namespace DesktopApp.MVVM.ViewModel
         }
 
         /// <summary>
+        /// Creates a new sideboard for a deck.
+        /// </summary>
+        public async Task AddSideboardAsync()
+        {
+            if (SelectedCollection == null || !SelectedCollection.IsDeck)
+            {
+                return;
+            }
+
+            var sideboardId = await _collectionService.AddDeckSideboardAsync(SelectedCollection.Id);
+
+            // Refresh Collections for now - may want to manually add just the sideboard to collections later.
+            await LoadCollectionsAsync();
+        }
+
+        /// <summary>
         /// Loads all collections.
         /// </summary>
         /// <returns></returns>
         private async Task LoadCollectionsAsync()
         {
+            Collections.Clear();
+
             var collections = await _collectionService.GetCollectionsAsync();
 
             foreach (var collection in collections)

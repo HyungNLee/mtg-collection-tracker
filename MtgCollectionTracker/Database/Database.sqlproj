@@ -87,6 +87,7 @@
     <Build Include="Procedures\ivw_OwnedCardSum_Details_SelectBy_CollectionId.sql" />
     <Build Include="Procedures\OwnedCard_Delete_Multiple.sql" />
     <Build Include="Procedures\ivw_OwnedCardSum_Details_SelectByCardId.sql" />
+    <Build Include="Procedures\Collection_Insert_Sideboard.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="PostDeployment.sql" />

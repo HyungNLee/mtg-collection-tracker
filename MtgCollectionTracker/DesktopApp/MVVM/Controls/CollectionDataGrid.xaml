@@ -16,13 +16,27 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
         <Button Grid.Row="0"
+            Grid.Column="0"
             x:Name="btnAddCollectionDialog"
             ClickMode="Release"
             Click="btnAddCollectionDialog_Click">Add Collection</Button>
 
+        <Button Grid.Row="0"
+            Grid.Column="1"
+            x:Name="btnAddSideboard"
+            ClickMode="Release"
+            Command="{Binding AddSideboardCommand}"
+            Content="Add Sideboard"/>
+
         <DataGrid
             Grid.Row="1"
+            Grid.ColumnSpan="2"
             ColumnWidth="*"
             ItemsSource="{Binding Collections}"
             AutoGenerateColumns="False"

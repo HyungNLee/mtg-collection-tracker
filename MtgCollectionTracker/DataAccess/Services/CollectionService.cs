@@ -45,6 +45,30 @@ namespace DataAccess.Services
             return parameters.Get<int>("@Id");
         }
 
+        public async Task<int> AddDeckSideboardAsync(int mainboardId)
+        {
+            var storedProcedure = "Collection_Insert_Sideboard";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@MainboardId", mainboardId);
+            parameters.Add("@Id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
+
+            try
+            {
+                using IDbConnection dbConnection = new SqlConnection(_config.ConnectionString);
+                await dbConnection.ExecuteAsync(
+                    sql: storedProcedure,
+                    param: parameters,
+                    commandType: CommandType.StoredProcedure);
+            }
+            catch (Exception ex)
+            {
+                // TODO: Logging
+            }
+
+            return parameters.Get<int>("@Id");
+        }
+
         public async Task<int> AddOwnedCardAsync(OwnedCardRequest request)
         {
             var storedProcedure = "OwnedCard_Insert";

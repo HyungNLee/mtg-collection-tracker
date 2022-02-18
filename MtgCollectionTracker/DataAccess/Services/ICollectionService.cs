@@ -11,6 +11,13 @@ namespace DataAccess.Services
         Task<int> AddCollectionAsync(AddCollectionRequest request);
 
         /// <summary>
+        /// Adds a sideboard to a mainboard deck.
+        /// </summary>
+        /// <param name="mainboardId"></param>
+        /// <returns></returns>
+        Task<int> AddDeckSideboardAsync(int mainboardId);
+
+        /// <summary>
         /// Adds an owned card.
         /// </summary>
         /// <param name="request"></param>
