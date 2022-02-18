@@ -13,7 +13,11 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <TextBox Grid.Row="0" Text="{Binding CardPrintTextSearch, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox Grid.Row="0" Text="{Binding CardPrintTextSearch, UpdateSourceTrigger=PropertyChanged}">
+            <TextBox.InputBindings>
+                <KeyBinding Command="{Binding CardFilterCommand}" Key="Enter" />
+            </TextBox.InputBindings>
+        </TextBox>
         <DataGrid
             Grid.Row="1"
             ColumnWidth="*"

@@ -53,11 +53,7 @@ namespace DesktopApp.MVVM.ViewModel
         public string CardPrintTextSearch
         {
             get { return _cardPrintTextSearch; }
-            set
-            {
-                SetProperty(ref _cardPrintTextSearch, value);
-                FilterCardPrints();
-            }
+            set { SetProperty(ref _cardPrintTextSearch, value); }
         }
 
         /// <summary>
@@ -115,7 +111,7 @@ namespace DesktopApp.MVVM.ViewModel
         {
             get
             {
-                var request = new DelegateCommand(() => AddOwnedCardRequestAsync());
+                var request = new DelegateCommand(() => AddOwnedCardRequestPublish());
                 return request;
             }
         }
@@ -127,8 +123,19 @@ namespace DesktopApp.MVVM.ViewModel
         {
             get
             {
-                var request = new DelegateCommand(() => AddOwnedCardRequestAsync(true));
+                var request = new DelegateCommand(() => AddOwnedCardRequestPublish(true));
                 return request;
+            }
+        }
+
+        /// <summary>
+        /// Used by the card text search to initiate filter on "Enter" key.
+        /// </summary>
+        public ICommand CardFilterCommand
+        {
+            get
+            {
+                return new DelegateCommand(() => FilterCardPrints());
             }
         }
 
@@ -162,7 +169,7 @@ namespace DesktopApp.MVVM.ViewModel
         /// Publishes an AddOwnedCardRequestEvent to add a new owned card.
         /// </summary>
         /// <returns></returns>
-        private async Task AddOwnedCardRequestAsync(bool isFoil = false)
+        private void AddOwnedCardRequestPublish(bool isFoil = false)
         {
             if (SelectedCardPrint == null)
             {

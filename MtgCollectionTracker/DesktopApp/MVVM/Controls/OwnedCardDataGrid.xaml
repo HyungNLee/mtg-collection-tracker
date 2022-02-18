@@ -21,7 +21,11 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <TextBox Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding CardTextSearch, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding CardTextSearch, UpdateSourceTrigger=PropertyChanged}">
+            <TextBox.InputBindings>
+                <KeyBinding Command="{Binding CardFilterCommand}" Key="Enter" />
+            </TextBox.InputBindings>
+        </TextBox>
         <DataGrid
             Grid.Row="1"
             Grid.ColumnSpan="2"

@@ -94,11 +94,7 @@ namespace DesktopApp.MVVM.ViewModel
         public string CardTextSearch
         {
             get { return _cardTextSearch; }
-            set
-            {
-                SetProperty(ref _cardTextSearch, value);
-                FilterOwnedCards();
-            }
+            set { SetProperty(ref _cardTextSearch, value); }
         }
 
         /// <summary>
@@ -185,6 +181,17 @@ namespace DesktopApp.MVVM.ViewModel
             {
                 var request = new DelegateCommand(async () => await DeleteSelectedOwnedCardAsync(true));
                 return request;
+            }
+        }
+
+        /// <summary>
+        /// Used by the card text search to initiate filter on "Enter" key.
+        /// </summary>
+        public ICommand CardFilterCommand
+        {
+            get
+            {
+                return new DelegateCommand(() => FilterOwnedCards());
             }
         }
 
