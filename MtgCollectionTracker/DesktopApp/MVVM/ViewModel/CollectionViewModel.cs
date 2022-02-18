@@ -107,6 +107,11 @@ namespace DesktopApp.MVVM.ViewModel
         public ObservableCollection<OwnedCardPrintAggregate> FilteredOwnedCards { get; private set; }
 
         /// <summary>
+        /// The sum of all owned cards in the filter.
+        /// </summary>
+        public int FilteredOwnedCardsSum => FilteredOwnedCards.Sum(card => card.Count);
+
+        /// <summary>
         /// Command to create a new sideboard.
         /// </summary>
         public DelegateCommand AddSideboardCommand { get; set; }
@@ -303,6 +308,7 @@ namespace DesktopApp.MVVM.ViewModel
             if (foundCard != null)
             {
                 foundCard.Count++;
+                RaisePropertyChanged(nameof(FilteredOwnedCardsSum));
                 return;
             }
 
@@ -393,6 +399,7 @@ namespace DesktopApp.MVVM.ViewModel
             }
 
             RaisePropertyChanged(nameof(FilteredOwnedCards));
+            RaisePropertyChanged(nameof(FilteredOwnedCardsSum));
         }
 
         private bool CardTextFilter(OwnedCardPrintAggregate item)

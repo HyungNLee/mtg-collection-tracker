@@ -27,7 +27,7 @@ begin try
 	end
 
 	-- Check if this deck is a sideboard
-	if @MainboardId is not null
+	if @foundMaideboardId is not null
 	begin
 		raiserror('Cannot create a sideboard for a sideboard.', 18, 1);
 	end

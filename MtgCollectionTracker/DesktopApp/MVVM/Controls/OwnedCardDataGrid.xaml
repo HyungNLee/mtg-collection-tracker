@@ -13,11 +13,18 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="25"/>
             <RowDefinition/>
+            <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
 
-        <TextBox Grid.Row="0" Text="{Binding CardTextSearch, UpdateSourceTrigger=PropertyChanged}"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <TextBox Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding CardTextSearch, UpdateSourceTrigger=PropertyChanged}"/>
         <DataGrid
             Grid.Row="1"
+            Grid.ColumnSpan="2"
             ColumnWidth="*"
             ItemsSource="{Binding FilteredOwnedCards}"
             AutoGenerateColumns="False"
@@ -43,6 +50,9 @@
             </DataGrid.Columns>
 
         </DataGrid>
+
+        <Label Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Content="Total Cards: " />
+        <Label Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Content="{Binding FilteredOwnedCardsSum}"/>
 
     </Grid>
 </UserControl>
