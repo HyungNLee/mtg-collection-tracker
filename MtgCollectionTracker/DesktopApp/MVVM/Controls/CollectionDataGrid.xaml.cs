@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using DesktopApp.MVVM.View;
+
 namespace DesktopApp.MVVM.Controls
 {
     /// <summary>
@@ -23,6 +25,13 @@ namespace DesktopApp.MVVM.Controls
         public CollectionDataGrid()
         {
             InitializeComponent();
+        }
+
+        private void btnAddCollectionDialog_Click(object sender, RoutedEventArgs e)
+        {
+            var dialogWindow = new AddCollectionDialogWindow();
+
+            var result = dialogWindow.ShowDialog();
         }
     }
 }

@@ -98,14 +98,19 @@ namespace DesktopApp.MVVM.ViewModel
             LoadCollectionsAsync();
 
             // Event subscribing
-            ApplicationEventManager.Instance.Subscribe<AddOwnedCardRequestEvent>(args =>
+            ApplicationEventManager.Instance.Subscribe<AddOwnedCardRequestEvent>(async args =>
             {
                 if (SelectedCollection == null)
                 {
                     return;
                 }
 
-                AddOwnedCardAsync(args.CardPrintId, SelectedCollection.Id, args.IsFoil);
+                await AddOwnedCardAsync(args.CardPrintId, SelectedCollection.Id, args.IsFoil);
+            });
+
+            ApplicationEventManager.Instance.Subscribe<CreateCollectionRequestEvent>(async args =>
+            {
+                await AddCollectionAsync(args.Name, args.IsDeck);
             });
         }
 
@@ -116,7 +121,7 @@ namespace DesktopApp.MVVM.ViewModel
         {
             get
             {
-                var request = new DelegateCommand(() => AddCurrentlySelectedCardAsync());
+                var request = new DelegateCommand(async () => await AddCurrentlySelectedCardAsync());
                 return request;
             }
         }
@@ -128,7 +133,7 @@ namespace DesktopApp.MVVM.ViewModel
         {
             get
             {
-                var request = new DelegateCommand(() => DeleteSelectedOwnedCardAsync());
+                var request = new DelegateCommand(async () => await DeleteSelectedOwnedCardAsync());
                 return request;
             }
         }
@@ -140,7 +145,7 @@ namespace DesktopApp.MVVM.ViewModel
         {
             get
             {
-                var request = new DelegateCommand(() => DeleteSelectedOwnedCardAsync(true));
+                var request = new DelegateCommand(async () => await DeleteSelectedOwnedCardAsync(true));
                 return request;
             }
         }
@@ -276,6 +281,37 @@ namespace DesktopApp.MVVM.ViewModel
             }
 
             SelectedOwnedCard.Count--;
+        }
+
+        /// <summary>
+        /// Adds a new non-sideboard collection.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="isDeck"></param>
+        /// <returns></returns>
+        private async Task AddCollectionAsync(string name, bool isDeck)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return;
+            }
+
+            var request = new DataAccessModels.AddCollectionRequest
+            {
+                IsDeck = isDeck,
+                Name = name,
+            };
+
+            var id = await _collectionService.AddCollectionAsync(request);
+
+            var newCollection = new CardCollection
+            {
+                Id = id,
+                IsDeck = isDeck,
+                Name = name
+            };
+
+            Collections.Add(newCollection);
         }
     }
 }

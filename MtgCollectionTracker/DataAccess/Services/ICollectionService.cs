@@ -5,6 +5,12 @@ namespace DataAccess.Services
     public interface ICollectionService
     {
         /// <summary>
+        /// Adds a new collection.
+        /// </summary>
+        /// <returns></returns>
+        Task<int> AddCollectionAsync(AddCollectionRequest request);
+
+        /// <summary>
         /// Adds an owned card.
         /// </summary>
         /// <param name="request"></param>

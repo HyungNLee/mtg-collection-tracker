@@ -12,11 +12,17 @@
     <Grid>
 
         <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
+        <Button Grid.Row="0"
+            x:Name="btnAddCollectionDialog"
+            ClickMode="Release"
+            Click="btnAddCollectionDialog_Click">Add Collection</Button>
+
         <DataGrid
-            Grid.Row="0"
+            Grid.Row="1"
             ColumnWidth="*"
             ItemsSource="{Binding Collections}"
             AutoGenerateColumns="False"
