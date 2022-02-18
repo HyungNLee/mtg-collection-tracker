@@ -56,7 +56,7 @@ namespace DesktopApp.MVVM.ViewModel
             set
             {
                 SetProperty(ref _cardPrintTextSearch, value);
-                FilterCardPrices();
+                FilterCardPrints();
             }
         }
 
@@ -105,7 +105,7 @@ namespace DesktopApp.MVVM.ViewModel
             }
 
             // Need this here otherwise grid won't show data on initial load.
-            FilterCardPrices();
+            FilterCardPrints();
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace DesktopApp.MVVM.ViewModel
         /// <summary>
         /// Clears and adds card prints that match the filter into the FilteredCardPrints collection
         /// </summary>
-        private void FilterCardPrices()
+        private void FilterCardPrints()
         {
             FilteredCardPrints.Clear();
 
