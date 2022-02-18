@@ -9,9 +9,17 @@
         xmlns:view="clr-namespace:DesktopApp.MVVM.View"
         mc:Ignorable="d"
         Title="MTG Collection Tracker"
-        Height="1000"
-        Width="1400"
-        ResizeMode="CanResizeWithGrip">
+        Height="1100"
+        Width="1800"
+        ResizeMode="CanResizeWithGrip"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto"        
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}">
 
     <Window.DataContext>
         <viewmodel:MainViewModel />
@@ -20,11 +28,13 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition />
+            <RowDefinition Height="5"/>
             <RowDefinition />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
+            <ColumnDefinition Width="5"/>
             <ColumnDefinition Width="400"/>
         </Grid.ColumnDefinitions>
 
@@ -34,13 +44,17 @@
             </Frame.Content>
         </Frame>
 
-        <Frame Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
+        <Frame Grid.Row="0" Grid.Column="2" Grid.RowSpan="3">
             <Frame.Content>
                 <view:SelectedCardPrintView />
             </Frame.Content>
         </Frame>
-        
-        <Frame Grid.Row="1" Grid.Column="0">
+
+        <GridSplitter Grid.Row="1" Grid.Column="0" Height="5" HorizontalAlignment="Stretch"/>
+
+        <GridSplitter Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+
+        <Frame Grid.Row="2" Grid.Column="0">
             <Frame.Content>
                 <view:MagicDatabaseView />
             </Frame.Content>
