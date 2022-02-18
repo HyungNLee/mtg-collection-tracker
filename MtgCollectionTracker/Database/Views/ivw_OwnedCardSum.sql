@@ -14,7 +14,7 @@ as
 go
 
 create unique clustered index ixuc_ivw_OwnedCardSum_CardPrintId
-	on ivw_OwnedCardSum(CardPrintId);
+	on ivw_OwnedCardSum(CardPrintId, IsFoil);
 
 go
 

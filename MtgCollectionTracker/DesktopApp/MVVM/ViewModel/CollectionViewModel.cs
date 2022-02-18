@@ -269,11 +269,11 @@ namespace DesktopApp.MVVM.ViewModel
 
             await _collectionService.AddOwnedCardAsync(newRequest);
 
-            var cardOperationSuccessEvent = new CardOperationSuccessEvent(cardPrintId, 1, CardOperation.Add);
+            var cardOperationSuccessEvent = new CardOperationSuccessEvent(cardPrintId, isFoil, 1, CardOperation.Add);
             ApplicationEventManager.Instance.Publish(cardOperationSuccessEvent);
 
             // If card already exists in the list, don't refresh the whole list. Just update the count property.
-            var foundCard = OwnedCards.FirstOrDefault(card => card.CardPrintId == cardPrintId);
+            var foundCard = OwnedCards.FirstOrDefault(card => card.CardPrintId == cardPrintId && card.IsFoil == isFoil);
             if (foundCard != null)
             {
                 foundCard.Count++;
@@ -306,7 +306,7 @@ namespace DesktopApp.MVVM.ViewModel
 
             await _collectionService.DeleteOwnedCardsAsync(request, numberToDelete);
 
-            var cardOperationSuccessEvent = new CardOperationSuccessEvent(SelectedOwnedCard.CardPrintId, numberToDelete, CardOperation.Delete);
+            var cardOperationSuccessEvent = new CardOperationSuccessEvent(SelectedOwnedCard.CardPrintId, SelectedOwnedCard.IsFoil, numberToDelete, CardOperation.Delete);
             ApplicationEventManager.Instance.Publish(cardOperationSuccessEvent);
 
             if (deleteAll || SelectedOwnedCard.Count == 1)

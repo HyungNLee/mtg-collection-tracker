@@ -60,7 +60,7 @@ namespace DesktopApp.MVVM.ViewModel
 
             ApplicationEventManager.Instance.Subscribe<CardOperationSuccessEvent>(async args =>
             {
-                await UpdateOwnedCardsCollection(args.CardPrintId, args.Count, args.OperationType == CardOperation.Delete);
+                await UpdateOwnedCardsCollection(args.CardPrintId, args.IsFoil, args.Count, args.OperationType == CardOperation.Delete);
             });
         }
 
@@ -102,10 +102,10 @@ namespace DesktopApp.MVVM.ViewModel
             RaisePropertyChanged(nameof(OwnedCards));
         }
 
-        private async Task UpdateOwnedCardsCollection(int cardPrintId, int count, bool isDelete = false)
+        private async Task UpdateOwnedCardsCollection(int cardPrintId, bool isFoil, int count, bool isDelete = false)
         {
             // Check if card print exists
-            var foundCardPrint = OwnedCards.FirstOrDefault(card => card.CardPrintId == cardPrintId);
+            var foundCardPrint = OwnedCards.FirstOrDefault(card => card.CardPrintId == cardPrintId && card.IsFoil == isFoil);
 
             // If no print is found, refresh list.
             if (foundCardPrint == null)

@@ -11,13 +11,15 @@
     /// </summary>
     internal class CardOperationSuccessEvent : IApplicationEvent
     {
-        public int CardPrintId { get; set; }
-        public int Count { get; set; }
-        public CardOperation OperationType { get; set; }
+        public int CardPrintId { get; private set; }
+        public bool IsFoil { get; private set; }
+        public int Count { get; private set; }
+        public CardOperation OperationType { get; private set; }
 
-        public CardOperationSuccessEvent(int cardPrintId, int count, CardOperation operationType)
+        public CardOperationSuccessEvent(int cardPrintId, bool isFoil, int count, CardOperation operationType)
         {
             CardPrintId = cardPrintId;
+            IsFoil = isFoil;
             Count = count;
             OperationType = operationType;
         }
