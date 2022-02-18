@@ -64,6 +64,7 @@ namespace DataAccess.Services
             catch (Exception ex)
             {
                 // TODO: Logging
+                return 0;
             }
 
             return parameters.Get<int>("@Id");
