@@ -36,11 +36,10 @@
             AutoGenerateColumns="False"
             IsReadOnly="True"
             SelectionMode="Single"
-            SelectedItem="{Binding SelectedCollection}"
-            HeadersVisibility="None">
+            SelectedItem="{Binding SelectedCollection}">
 
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
             </DataGrid.Columns>
 
         </DataGrid>
