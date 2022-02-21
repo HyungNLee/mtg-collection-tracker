@@ -26,6 +26,8 @@ namespace DataAccess.Sqlite
                 CreateCardPrintTable();
                 CreateCollectionTable();
                 CreateOwnedCardTable();
+                CreateCardPrintDetailsView();
+                CreateOwnedCardSumView();
             }
         }
 
@@ -113,6 +115,51 @@ namespace DataAccess.Sqlite
                         FOREIGN KEY(CardPrintId) REFERENCES CardPrint(Id),
                         FOREIGN KEY(CollectionId) REFERENCES [Collection](Id)
                     );";
+
+            SQLiteCommand command = new(sql, db);
+            command.ExecuteNonQuery();
+        }
+
+        private static void CreateCardPrintDetailsView()
+        {
+            using var db = new SQLiteConnection(GetConnectionString);
+            db.Open();
+            string sql = @"        
+                CREATE VIEW vw_CardPrintDetails
+                as
+                    select
+                        cp.Id,
+                        cp.CardId,
+                        c.[Name] as CardName,
+                        cp.SetId,
+                        s.[Name] as SetName,
+                        cp.PictureUrl,
+                        cp.FlipPictureUrl
+                    from CardPrint as cp
+                    inner join [Card] as c on cp.CardId = c.Id
+                    inner join [Set] as s on cp.SetId = s.Id";
+
+            SQLiteCommand command = new(sql, db);
+            command.ExecuteNonQuery();
+        }
+
+        private static void CreateOwnedCardSumView()
+        {
+            using var db = new SQLiteConnection(GetConnectionString);
+            db.Open();
+            string sql = @"        
+                CREATE VIEW vw_OwnedCardSum
+                as
+                    select
+                        CardPrintId,
+                        CollectionId,
+                        IsFoil,
+                        Count(*) as [Count]
+                    from OwnedCard
+                    group by
+                        CardPrintId,
+                        CollectionId,
+                        IsFoil;";
 
             SQLiteCommand command = new(sql, db);
             command.ExecuteNonQuery();

@@ -1,54 +1,150 @@
 ﻿using System.Data.SQLite;
 
+using Dapper;
+
 using DataAccess.Models;
 using DataAccess.Services;
 
 namespace DataAccess.Sqlite
 {
-    public class SqliteCardPrintService : ICardPrintService
+    public class SQLiteCardPrintService : ICardPrintService
     {
-        private const string _dbName = "MtgCollection.db";
-
-        private string _dbFilePath = $"Filename={Path.Combine(Directory.GetCurrentDirectory(), _dbName)}";
-
-        public SqliteCardPrintService()
+        public SQLiteCardPrintService()
         {
             SQLiteDatabaseCreator.CreateDatabaseIfNotExists();
         }
 
-        public Task<Card> GetCardAsync(string name)
+        public async Task<Card> GetCardAsync(string name)
         {
-            throw new NotImplementedException();
+            string sql = @"
+                select
+                    *
+                from [Card]
+                where [Name] = @Name;";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@Name", name);
+
+            using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
+            var foundCard = await dbConnection.QueryFirstOrDefaultAsync<Card>(
+                sql: sql,
+                param: parameters);
+
+            return foundCard;
         }
 
-        public Task<CardPrintDetail> GetCardPrintDetailAsync(int cardId, int setId)
+        public async Task<CardPrintDetail> GetCardPrintDetailAsync(int cardId, int setId)
         {
-            throw new NotImplementedException();
+            var sql = @"
+                select
+                    *
+                from vw_CardPrintDetails
+                where
+                    CardId = @CardId
+                    and SetId = @SetId;";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@CardId", cardId);
+            parameters.Add("@SetId", setId);
+
+            using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
+            var foundCardPrint = await dbConnection.QueryFirstOrDefaultAsync<CardPrintDetail>(
+                sql: sql,
+                param: parameters);
+
+            return foundCardPrint;
         }
 
-        public Task<IEnumerable<CardPrintDetail>> GetCardPrintDetailsAsync()
+        public async Task<IEnumerable<CardPrintDetail>> GetCardPrintDetailsAsync()
         {
-            throw new NotImplementedException();
+            var sql = @"
+                select
+                    *
+                from vw_CardPrintDetails;";
+
+            using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
+            var foundCardPrints = await dbConnection.QueryAsync<CardPrintDetail>(sql: sql);
+
+            return foundCardPrints;
         }
 
-        public Task<Set> GetSetAsync(string name)
+        public async Task<Set> GetSetAsync(string name)
         {
-            throw new NotImplementedException();
+            var sql = @"
+                select
+                    *
+                from [Set]
+                where [Name] = @Name;";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@Name", name);
+
+            using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
+            var foundSet = await dbConnection.QueryFirstOrDefaultAsync<Set>(
+                sql: sql,
+                param: parameters);
+
+            return foundSet;
         }
 
-        public Task<int> InsertCardAsync(string name)
+        public async Task<int> InsertCardAsync(string name)
         {
-            throw new NotImplementedException();
+            var sql = @"
+                insert into [Card] ([Name])
+                values (@Name);
+
+                select last_insert_rowid();";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@Name", name);
+
+            using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
+            var lastId = await dbConnection.QueryAsync<int>(
+                sql: sql,
+                param: parameters);
+
+            return lastId.First();
         }
 
-        public Task<int> InsertCardPrintAsync(int cardId, int setId, string pictureUrl, string flipPictureUrl)
+        public async Task<int> InsertCardPrintAsync(int cardId, int setId, string pictureUrl, string flipPictureUrl)
         {
-            throw new NotImplementedException();
+            var sql = @"
+                insert into CardPrint (CardId, SetId, PictureUrl, FlipPictureUrl)
+                values (@CardId, @SetId, @PictureUrl, @FlipPictureUrl);
+
+                select last_insert_rowid();";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@CardId", cardId);
+            parameters.Add("@SetId", setId);
+            parameters.Add("@PictureUrl", pictureUrl);
+            parameters.Add("@FlipPictureUrl", flipPictureUrl);
+
+            using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
+            var lastId = await dbConnection.QueryAsync<int>(
+                sql: sql,
+                param: parameters);
+
+            return lastId.First();
         }
 
-        public Task<int> InsertSetAsync(string name)
+        public async Task<int> InsertSetAsync(string name)
         {
-            throw new NotImplementedException();
+            var sql = @"
+                insert into [Set] ([Name])
+                values (@Name);
+
+                select last_insert_rowid();";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@Name", name);
+
+            using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
+            var lastId = await dbConnection.QueryAsync<int>(
+                sql: sql,
+                param: parameters);
+
+            return lastId.First();
         }
     }
 }
