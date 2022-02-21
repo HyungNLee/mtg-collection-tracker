@@ -28,6 +28,8 @@ namespace DataAccess.Sqlite
                 CreateOwnedCardTable();
                 CreateCardPrintDetailsView();
                 CreateOwnedCardSumView();
+
+                InsertMainCollection();
             }
         }
 
@@ -160,6 +162,24 @@ namespace DataAccess.Sqlite
                         CardPrintId,
                         CollectionId,
                         IsFoil;";
+
+            SQLiteCommand command = new(sql, db);
+            command.ExecuteNonQuery();
+        }
+
+        private static void InsertMainCollection()
+        {
+            using var db = new SQLiteConnection(GetConnectionString);
+            db.Open();
+            string sql = @"        
+                insert into [Collection] (
+                    [Name],
+                    IsDeck
+                )
+                values (
+                    'Main Collection',
+                    0
+                );";
 
             SQLiteCommand command = new(sql, db);
             command.ExecuteNonQuery();
