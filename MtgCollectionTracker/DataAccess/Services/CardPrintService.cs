@@ -51,6 +51,11 @@ namespace DataAccess.Services
             return foundCardPrint;
         }
 
+        public Task<CardPrintDetail> GetCardPrintDetailAsync(string cardName, string setName)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<IEnumerable<CardPrintDetail>> GetCardPrintDetailsAsync()
         {
             var storedProcedure = "vw_CardPrintDetails_Select";

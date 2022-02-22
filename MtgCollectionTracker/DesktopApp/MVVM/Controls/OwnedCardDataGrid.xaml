@@ -13,7 +13,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="25"/>
             <RowDefinition/>
-            <RowDefinition Height="25"/>
+            <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -55,8 +55,42 @@
 
         </DataGrid>
 
-        <Label Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Content="Total Cards: " />
-        <Label Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Content="{Binding FilteredOwnedCardsSum}"/>
+        <Button
+            x:Name="btnImport"
+            Grid.Row="2"
+            Grid.Column="0"
+            HorizontalAlignment="Center"
+            Margin="0,0,100,0"
+            Height="25"
+            FontSize="12"
+            ClickMode="Release"
+            Command="{Binding ImportCardCommand}"
+            Content="Import"/>
+        <Button
+            x:Name="btnExport"
+            Grid.Row="2"
+            Grid.Column="0"
+            HorizontalAlignment="Center"
+            Margin="100,0,0,0"
+            Height="25"
+            FontSize="12"
+            ClickMode="Release"
+            Command="{Binding ExportCardCommand}"
+            Content="Export"/>
+
+        <Label
+            Grid.Row="2"
+            Grid.Column="1"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            Margin="0,0,40,0"
+            Content="Total Cards: " />
+        <Label
+            Grid.Row="2"
+            Grid.Column="1"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            Content="{Binding FilteredOwnedCardsSum}"/>
 
     </Grid>
 </UserControl>

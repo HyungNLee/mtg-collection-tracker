@@ -126,6 +126,11 @@ namespace DataAccess.Services
             throw new NotImplementedException();
         }
 
+        public Task<CardCollection> GetCollectionAsync(string name)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<IEnumerable<CardCollection>> GetCollectionsAsync()
         {
             var storedProcedure = "Collection_Select";
@@ -176,6 +181,18 @@ namespace DataAccess.Services
                 commandType: CommandType.StoredProcedure);
 
             return foundCollections ?? Enumerable.Empty<OwnedCardPrintAggregate>();
+        }
+
+        public async Task<IEnumerable<OwnedCardExport>> GetOwnedCardsExportFormatAsync()
+        {
+            var storedProcedure = "ivw_OwnedCardSum_All_Export";
+
+            using IDbConnection dbConnection = new SqlConnection(_config.ConnectionString);
+            var foundCollections = await dbConnection.QueryAsync<OwnedCardExport>(
+                sql: storedProcedure,
+                commandType: CommandType.StoredProcedure);
+
+            return foundCollections ?? Enumerable.Empty<OwnedCardExport>();
         }
     }
 }

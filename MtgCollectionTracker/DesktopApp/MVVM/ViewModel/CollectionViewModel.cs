@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -24,6 +27,7 @@ namespace DesktopApp.MVVM.ViewModel
     internal class CollectionViewModel : BindableBase
     {
         private readonly ICollectionService _collectionService;
+        private readonly ICardPrintService _cardPrintService;
 
         /// <summary>
         /// A list of all collections.
@@ -113,15 +117,28 @@ namespace DesktopApp.MVVM.ViewModel
         /// </summary>
         public DelegateCommand AddSideboardCommand { get; set; }
 
+        /// <summary>
+        /// Command to import owned cards.
+        /// </summary>
+        public DelegateCommand ImportCardCommand { get; private set; }
+
+        /// <summary>
+        /// Command export owned cards.
+        /// </summary>
+        public DelegateCommand ExportCardCommand { get; private set; }
+
         public CollectionViewModel()
         {
             _collectionService = new SQLiteCollectionService();
+            _cardPrintService = new SQLiteCardPrintService();
 
             Collections = new ObservableCollection<CardCollection>();
             OwnedCards = new ObservableCollection<OwnedCardPrintAggregate>();
             FilteredOwnedCards = new ObservableCollection<OwnedCardPrintAggregate>();
 
             AddSideboardCommand = new DelegateCommand(async () => await AddSideboardAsync());
+            ImportCardCommand = new DelegateCommand(async () => await ImportOwnedCardsJsonAsync());
+            ExportCardCommand = new DelegateCommand(async () => await ExportOwnedCardsJsonAsync());
 
             LoadCollectionsAsync();
 
@@ -411,6 +428,89 @@ namespace DesktopApp.MVVM.ViewModel
                 return true;
             else
                 return item.CardName.Contains(CardTextSearch, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private async Task ExportOwnedCardsJsonAsync()
+        {
+            var ownedCards = await _collectionService.GetOwnedCardsExportFormatAsync();
+            var jsonSerialized = JsonSerializer.Serialize(ownedCards);
+
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "OwnedCardsExport.json");
+            File.WriteAllText(filePath, jsonSerialized);
+        }
+
+        private async Task ImportOwnedCardsJsonAsync()
+        {
+            // Create backup of database first.
+            var backupFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "backups");
+            Directory.CreateDirectory(backupFolderPath);
+
+            // Copy database
+            var backupDbPath = Path.Combine(backupFolderPath, SQLiteDatabaseCreator.DatabaseName);
+            File.Copy(SQLiteDatabaseCreator.DatabaseFilePath, backupDbPath, true);
+
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "OwnedCardsExport.json");
+
+            var jsonText = File.ReadAllText(filePath);
+            var ownedCards = JsonSerializer.Deserialize<IEnumerable<DataAccessModels.OwnedCardExport>>(jsonText)
+                ?? Enumerable.Empty<DataAccessModels.OwnedCardExport>();
+
+            string sideboardIdentifier = " - Sideboard";
+            foreach (var ownedCard in ownedCards)
+            {
+                var foundCollection = await _collectionService.GetCollectionAsync(ownedCard.CollectionName);
+                if (foundCollection == null)
+                {
+                    // Check if sideboard
+                    if (ownedCard.CollectionName.Contains(sideboardIdentifier))
+                    {
+                        var cutoffIndex = ownedCard.CollectionName.LastIndexOf(sideboardIdentifier);
+                        var mainboardName = ownedCard.CollectionName.Substring(0, cutoffIndex);
+                        var foundMainboardCollection = await _collectionService.GetCollectionAsync(mainboardName);
+
+                        if (foundMainboardCollection == null)
+                        {
+                            var collectionRequest = new DataAccessModels.AddCollectionRequest
+                            {
+                                IsDeck = true,
+                                Name = mainboardName
+                            };
+                            await _collectionService.AddCollectionAsync(collectionRequest);
+                            foundMainboardCollection = await _collectionService.GetCollectionAsync(mainboardName);
+                        }
+
+                        var sideboardId = await _collectionService.AddDeckSideboardAsync(foundMainboardCollection.Id);
+                    }
+                    else
+                    {
+                        var collectionRequest = new DataAccessModels.AddCollectionRequest
+                        {
+                            IsDeck = ownedCard.IsDeck,
+                            Name = ownedCard.CollectionName
+                        };
+                        await _collectionService.AddCollectionAsync(collectionRequest);
+                    }
+
+                    foundCollection = await _collectionService.GetCollectionAsync(ownedCard.CollectionName);
+                }
+
+                var cardPrintDetails = await _cardPrintService.GetCardPrintDetailAsync(ownedCard.CardName, ownedCard.SetName);
+
+                for (int i = 0; i < ownedCard.Count; i++)
+                {
+                    var ownedCardRequest = new DataAccessModels.OwnedCardRequest
+                    {
+                        CardPrintId = cardPrintDetails.Id,
+                        CollectionId = foundCollection.Id,
+                        IsFoil = ownedCard.IsFoil
+                    };
+
+                    await _collectionService.AddOwnedCardAsync(ownedCardRequest);
+                }
+            }
+
+            await LoadOwnedCardsByCollection();
+            await LoadCollectionsAsync();
         }
     }
 }

@@ -55,6 +55,28 @@ namespace DataAccess.Sqlite
             return foundCardPrint;
         }
 
+        public async Task<CardPrintDetail> GetCardPrintDetailAsync(string cardName, string setName)
+        {
+            var sql = @"
+                select
+                    *
+                from vw_CardPrintDetails
+                where
+                    CardName = @CardName
+                    and SetName = @SetName;";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@CardName", cardName);
+            parameters.Add("@SetName", setName);
+
+            using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
+            var foundCardPrint = await dbConnection.QueryFirstOrDefaultAsync<CardPrintDetail>(
+                sql: sql,
+                param: parameters);
+
+            return foundCardPrint;
+        }
+
         public async Task<IEnumerable<CardPrintDetail>> GetCardPrintDetailsAsync()
         {
             var sql = @"
