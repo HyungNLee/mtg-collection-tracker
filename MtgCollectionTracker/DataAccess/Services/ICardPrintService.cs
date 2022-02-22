@@ -20,6 +20,14 @@ namespace DataAccess.Services
         Task<CardPrintDetail> GetCardPrintDetailAsync(int cardId, int setId);
 
         /// <summary>
+        /// Gets a card print by card name and set name.
+        /// </summary>
+        /// <param name="cardId"></param>
+        /// <param name="setId"></param>
+        /// <returns>Returns the found card print. Will return null if no card is found.</returns>
+        Task<CardPrintDetail> GetCardPrintDetailAsync(string cardName, string setName);
+
+        /// <summary>
         /// Gets all card print details.
         /// </summary>
         /// <returns>A collection of all card print details.</returns>

@@ -41,10 +41,23 @@ namespace DataAccess.Services
         Task<CardCollection> GetCollectionAsync(int collectionId);
 
         /// <summary>
+        /// Gets a collection by name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns>Returns the found collection. If no collection is found, will return a null value.</returns>
+        Task<CardCollection> GetCollectionAsync(string name);
+
+        /// <summary>
         /// Gets all collections.
         /// </summary>
         /// <returns>Returns all collections. If no collections are found, will return an empty collection.</returns>
         Task<IEnumerable<CardCollection>> GetCollectionsAsync();
+
+        /// <summary>
+        /// Gets all owned cards.
+        /// </summary>
+        /// <returns>Returns all owned cards in export format. If no owned cards are found, will return an empty collection.</returns>
+        Task<IEnumerable<OwnedCardExport>> GetOwnedCardsExportFormatAsync();
 
         /// <summary>
         /// Gets the aggregate owned details by card Id.

@@ -194,6 +194,23 @@ namespace DataAccess.Sqlite
                 param: parameters);
         }
 
+        public async Task<CardCollection> GetCollectionAsync(string name)
+        {
+            var sql = @"
+                select
+                    *
+                from [Collection]
+                where [Name] = @Name;";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@Name", name);
+
+            using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
+            return await dbConnection.QueryFirstOrDefaultAsync<CardCollection>(
+                sql: sql,
+                param: parameters);
+        }
+
         public async Task<IEnumerable<CardCollection>> GetCollectionsAsync()
         {
             var sql = @"
@@ -284,6 +301,37 @@ namespace DataAccess.Sqlite
             }
 
             return foundCollections ?? Enumerable.Empty<OwnedCardPrintAggregate>();
+        }
+
+        public async Task<IEnumerable<OwnedCardExport>> GetOwnedCardsExportFormatAsync()
+        {
+            var sql = @"
+                select 
+                    cd.[Name] as CardName,
+                    s.[Name] as SetName,
+                    c.[Name] as CollectionName,
+                    c.IsDeck,
+                    [IsFoil],
+                    [Count]
+                from [vw_OwnedCardSum] as ocs
+                inner join [Collection] as c on ocs.CollectionId = c.Id
+                inner join [CardPrint] as cp on ocs.CardPrintId = cp.Id
+                inner join [Card] as cd on cp.CardId = cd.Id
+                inner join [Set] as s on cp.SetId = s.Id
+                order by c.Id;";
+
+            IEnumerable<OwnedCardExport> foundCollections = null;
+            try
+            {
+                using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
+                foundCollections = await dbConnection.QueryAsync<OwnedCardExport>(sql: sql);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return foundCollections ?? Enumerable.Empty<OwnedCardExport>();
         }
     }
 }
