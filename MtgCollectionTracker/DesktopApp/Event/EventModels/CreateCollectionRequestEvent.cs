@@ -1,4 +1,6 @@
-﻿namespace DesktopApp.Event.EventModels
+﻿using Serilog;
+
+namespace DesktopApp.Event.EventModels
 {
     internal class CreateCollectionRequestEvent : IApplicationEvent
     {
@@ -7,6 +9,8 @@
 
         public CreateCollectionRequestEvent(string name, bool isDeck)
         {
+            Log.Debug($"{nameof(CreateCollectionRequestEvent)}: Constructor");
+
             Name = name;
             IsDeck = isDeck;
         }

@@ -7,6 +7,8 @@ using DataAccess.Models;
 
 using Microsoft.Extensions.Options;
 
+using Serilog;
+
 namespace DataAccess.Services
 {
     public class CollectionService : ICollectionService
@@ -15,100 +17,111 @@ namespace DataAccess.Services
 
         public CollectionService(IOptions<DataAccessConfig> config)
         {
+            Log.Debug($"{nameof(CollectionService)}: Constructor");
+
             _config = config.Value;
         }
 
         public async Task<int> AddCollectionAsync(AddCollectionRequest request)
         {
-            var storedProcedure = "Collection_Insert";
+            Log.Debug($"{nameof(CollectionService)}: {nameof(AddCollectionAsync)}");
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@Name", request.Name);
-            parameters.Add("@IsDeck", request.IsDeck);
-            parameters.Add("@MainboardId", request.MainboardId);
-            parameters.Add("@SideboardId", request.SideboardId);
-            parameters.Add("@Id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
+            var storedProcedure = "Collection_Insert";
 
             try
             {
+                var parameters = new DynamicParameters();
+                parameters.Add("@Name", request.Name);
+                parameters.Add("@IsDeck", request.IsDeck);
+                parameters.Add("@MainboardId", request.MainboardId);
+                parameters.Add("@SideboardId", request.SideboardId);
+                parameters.Add("@Id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
+
                 using IDbConnection dbConnection = new SqlConnection(_config.ConnectionString);
                 await dbConnection.ExecuteAsync(
                     sql: storedProcedure,
                     param: parameters,
                     commandType: CommandType.StoredProcedure);
+
+                return parameters.Get<int>("@Id");
             }
             catch (Exception ex)
             {
-                // TODO: Logging
+                Log.Error(ex, $"{nameof(CollectionService)}: {nameof(AddCollectionAsync)}");
+                throw;
             }
-
-            return parameters.Get<int>("@Id");
         }
 
         public async Task<int> AddDeckSideboardAsync(int mainboardId)
         {
-            var storedProcedure = "Collection_Insert_Sideboard";
+            Log.Debug($"{nameof(CollectionService)}: {nameof(AddDeckSideboardAsync)}");
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@MainboardId", mainboardId);
-            parameters.Add("@Id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
+            var storedProcedure = "Collection_Insert_Sideboard";
 
             try
             {
+                var parameters = new DynamicParameters();
+                parameters.Add("@MainboardId", mainboardId);
+                parameters.Add("@Id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
+
                 using IDbConnection dbConnection = new SqlConnection(_config.ConnectionString);
                 await dbConnection.ExecuteAsync(
                     sql: storedProcedure,
                     param: parameters,
                     commandType: CommandType.StoredProcedure);
+
+                return parameters.Get<int>("@Id");
             }
             catch (Exception ex)
             {
-                // TODO: Logging
-                throw ex;
+                Log.Error(ex, $"{nameof(CollectionService)}: {nameof(AddDeckSideboardAsync)}");
+                throw;
             }
-
-            return parameters.Get<int>("@Id");
         }
 
         public async Task<int> AddOwnedCardAsync(OwnedCardRequest request)
         {
-            var storedProcedure = "OwnedCard_Insert";
+            Log.Debug($"{nameof(CollectionService)}: {nameof(AddOwnedCardAsync)}");
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@CardPrintId", request.CardPrintId);
-            parameters.Add("@CollectionId", request.CollectionId);
-            parameters.Add("@IsFoil", request.IsFoil);
-            parameters.Add("@Id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
+            var storedProcedure = "OwnedCard_Insert";
 
             try
             {
+                var parameters = new DynamicParameters();
+                parameters.Add("@CardPrintId", request.CardPrintId);
+                parameters.Add("@CollectionId", request.CollectionId);
+                parameters.Add("@IsFoil", request.IsFoil);
+                parameters.Add("@Id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
+
                 using IDbConnection dbConnection = new SqlConnection(_config.ConnectionString);
                 await dbConnection.ExecuteAsync(
                     sql: storedProcedure,
                     param: parameters,
                     commandType: CommandType.StoredProcedure);
+
+                return parameters.Get<int>("@Id");
             }
             catch (Exception ex)
             {
-                // TODO: Logging
-                throw ex;
+                Log.Error(ex, $"{nameof(CollectionService)}: {nameof(AddOwnedCardAsync)}");
+                throw;
             }
-
-            return parameters.Get<int>("@Id");
         }
 
         public async Task DeleteOwnedCardsAsync(OwnedCardRequest request, int numberToDelete)
         {
-            var storedProcedure = "OwnedCard_Delete_Multiple";
+            Log.Debug($"{nameof(CollectionService)}: {nameof(DeleteOwnedCardsAsync)}");
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@CardPrintId", request.CardPrintId);
-            parameters.Add("@CollectionId", request.CollectionId);
-            parameters.Add("@IsFoil", request.IsFoil);
-            parameters.Add("@NumberToDelete", numberToDelete);
+            var storedProcedure = "OwnedCard_Delete_Multiple";
 
             try
             {
+                var parameters = new DynamicParameters();
+                parameters.Add("@CardPrintId", request.CardPrintId);
+                parameters.Add("@CollectionId", request.CollectionId);
+                parameters.Add("@IsFoil", request.IsFoil);
+                parameters.Add("@NumberToDelete", numberToDelete);
+
                 using IDbConnection dbConnection = new SqlConnection(_config.ConnectionString);
                 await dbConnection.ExecuteAsync(
                     sql: storedProcedure,
@@ -117,82 +130,119 @@ namespace DataAccess.Services
             }
             catch (Exception ex)
             {
-                // TODO: Logging
+                Log.Error(ex, $"{nameof(CollectionService)}: {nameof(DeleteOwnedCardsAsync)}");
+                throw;
             }
         }
 
         public Task<CardCollection> GetCollectionAsync(int collectionId)
         {
+            Log.Debug($"{nameof(CollectionService)}: {nameof(GetCollectionAsync)}");
+
             throw new NotImplementedException();
         }
 
         public Task<CardCollection> GetCollectionAsync(string name)
         {
+            Log.Debug($"{nameof(CollectionService)}: {nameof(GetCollectionAsync)}");
+
             throw new NotImplementedException();
         }
 
         public async Task<IEnumerable<CardCollection>> GetCollectionsAsync()
         {
-            var storedProcedure = "Collection_Select";
+            Log.Debug($"{nameof(CollectionService)}: {nameof(GetCollectionsAsync)}");
 
-            using IDbConnection dbConnection = new SqlConnection(_config.ConnectionString);
-            var foundCollections = await dbConnection.QueryAsync<CardCollection>(
-                sql: storedProcedure,
-                commandType: CommandType.StoredProcedure);
+            try
+            {
+                var storedProcedure = "Collection_Select";
 
-            return foundCollections ?? Enumerable.Empty<CardCollection>();
+                using IDbConnection dbConnection = new SqlConnection(_config.ConnectionString);
+                var foundCollections = await dbConnection.QueryAsync<CardCollection>(
+                    sql: storedProcedure,
+                    commandType: CommandType.StoredProcedure);
+
+                return foundCollections ?? Enumerable.Empty<CardCollection>();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"{nameof(CollectionService)}: {nameof(GetCollectionsAsync)}");
+                throw;
+            }
         }
 
         public async Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesAsyncByCardId(int cardId)
         {
+            Log.Debug($"{nameof(CollectionService)}: {nameof(GetOwnedCardsAggregatesAsyncByCardId)}");
+
             var storedProcedure = "ivw_OwnedCardSum_Details_SelectBy_CardId";
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@CardId", cardId);
-
-            IEnumerable<OwnedCardPrintAggregate> foundCollections = null;
             try
             {
+                var parameters = new DynamicParameters();
+                parameters.Add("@CardId", cardId);
+
                 using IDbConnection dbConnection = new SqlConnection(_config.ConnectionString);
-                foundCollections = await dbConnection.QueryAsync<OwnedCardPrintAggregate>(
+                var foundCollections = await dbConnection.QueryAsync<OwnedCardPrintAggregate>(
                     sql: storedProcedure,
                     param: parameters,
                     commandType: CommandType.StoredProcedure);
+
+                return foundCollections ?? Enumerable.Empty<OwnedCardPrintAggregate>();
             }
             catch (Exception ex)
             {
-
+                Log.Error(ex, $"{nameof(CollectionService)}: {nameof(GetOwnedCardsAggregatesAsyncByCardId)}");
+                throw;
             }
-
-            return foundCollections ?? Enumerable.Empty<OwnedCardPrintAggregate>();
         }
 
         public async Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesAsyncByCollectionId(int collectionId)
         {
+            Log.Debug($"{nameof(CollectionService)}: {nameof(GetOwnedCardsAggregatesAsyncByCollectionId)}");
+
             var storedProcedure = "ivw_OwnedCardSum_Details_SelectBy_CollectionId";
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@CollectionId", collectionId);
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@CollectionId", collectionId);
 
-            using IDbConnection dbConnection = new SqlConnection(_config.ConnectionString);
-            var foundCollections = await dbConnection.QueryAsync<OwnedCardPrintAggregate>(
-                sql: storedProcedure,
-                param: parameters,
-                commandType: CommandType.StoredProcedure);
+                using IDbConnection dbConnection = new SqlConnection(_config.ConnectionString);
+                var foundCollections = await dbConnection.QueryAsync<OwnedCardPrintAggregate>(
+                    sql: storedProcedure,
+                    param: parameters,
+                    commandType: CommandType.StoredProcedure);
 
-            return foundCollections ?? Enumerable.Empty<OwnedCardPrintAggregate>();
+                return foundCollections ?? Enumerable.Empty<OwnedCardPrintAggregate>();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"{nameof(CollectionService)}: {nameof(GetOwnedCardsAggregatesAsyncByCollectionId)}");
+                throw;
+            }
         }
 
         public async Task<IEnumerable<OwnedCardExport>> GetOwnedCardsExportFormatAsync()
         {
+            Log.Debug($"{nameof(CollectionService)}: {nameof(GetOwnedCardsExportFormatAsync)}");
+
             var storedProcedure = "ivw_OwnedCardSum_All_Export";
 
-            using IDbConnection dbConnection = new SqlConnection(_config.ConnectionString);
-            var foundCollections = await dbConnection.QueryAsync<OwnedCardExport>(
-                sql: storedProcedure,
-                commandType: CommandType.StoredProcedure);
+            try
+            {
+                using IDbConnection dbConnection = new SqlConnection(_config.ConnectionString);
+                var foundCollections = await dbConnection.QueryAsync<OwnedCardExport>(
+                    sql: storedProcedure,
+                    commandType: CommandType.StoredProcedure);
 
-            return foundCollections ?? Enumerable.Empty<OwnedCardExport>();
+                return foundCollections ?? Enumerable.Empty<OwnedCardExport>();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"{nameof(CollectionService)}: {nameof(GetOwnedCardsExportFormatAsync)}");
+                throw;
+            }
         }
     }
 }

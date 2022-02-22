@@ -5,17 +5,23 @@ using Dapper;
 using DataAccess.Models;
 using DataAccess.Services;
 
+using Serilog;
+
 namespace DataAccess.Sqlite
 {
     public class SQLiteCollectionService : ICollectionService
     {
         public SQLiteCollectionService()
         {
+            Log.Debug($"{nameof(SQLiteCollectionService)}: Constructor");
+
             SQLiteDatabaseCreator.CreateDatabaseIfNotExists();
         }
 
         public async Task<int> AddCollectionAsync(AddCollectionRequest request)
         {
+            Log.Debug($"{nameof(SQLiteCollectionService)}: {nameof(AddCollectionAsync)}");
+
             var sql = @"
                 insert into [Collection] (
                     [Name],
@@ -32,14 +38,14 @@ namespace DataAccess.Sqlite
 
                 select last_insert_rowid();";
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@Name", request.Name);
-            parameters.Add("@IsDeck", request.IsDeck);
-            parameters.Add("@MainboardId", request.MainboardId);
-            parameters.Add("@SideboardId", request.SideboardId);
-
             try
             {
+                var parameters = new DynamicParameters();
+                parameters.Add("@Name", request.Name);
+                parameters.Add("@IsDeck", request.IsDeck);
+                parameters.Add("@MainboardId", request.MainboardId);
+                parameters.Add("@SideboardId", request.SideboardId);
+
                 using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
                 var lastId = await dbConnection.QueryAsync<int>(
                     sql: sql,
@@ -49,14 +55,15 @@ namespace DataAccess.Sqlite
             }
             catch (Exception ex)
             {
-                // TODO: Logging
-                throw ex;
+                Log.Error(ex, $"{nameof(SQLiteCollectionService)}: {nameof(AddCollectionAsync)}");
+                throw;
             }
-
         }
 
         public async Task<int> AddDeckSideboardAsync(int mainboardId)
         {
+            Log.Debug($"{nameof(SQLiteCollectionService)}: {nameof(AddDeckSideboardAsync)}");
+
             var mainboardCollection = await GetCollectionAsync(mainboardId);
             if (mainboardCollection == null)
             {
@@ -91,12 +98,12 @@ namespace DataAccess.Sqlite
                 where
                     Id = @Id;";
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@Id", mainboardId);
-            parameters.Add("@SideboardId", insertedSideboardCollectionId);
-
             try
             {
+                var parameters = new DynamicParameters();
+                parameters.Add("@Id", mainboardId);
+                parameters.Add("@SideboardId", insertedSideboardCollectionId);
+
                 using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
                 await dbConnection.ExecuteAsync(
                     sql: sql,
@@ -106,26 +113,28 @@ namespace DataAccess.Sqlite
             }
             catch (Exception ex)
             {
-                // TODO: Logging
-                throw ex;
+                Log.Error(ex, $"{nameof(SQLiteCollectionService)}: {nameof(AddDeckSideboardAsync)}");
+                throw;
             }
         }
 
         public async Task<int> AddOwnedCardAsync(OwnedCardRequest request)
         {
+            Log.Debug($"{nameof(SQLiteCollectionService)}: {nameof(AddOwnedCardAsync)}");
+
             var storedProcedure = @"
                 insert into OwnedCard (CardPrintId, CollectionId, IsFoil)
                 values (@CardPrintId, @CollectionId, @IsFoil);
 
                 select last_insert_rowid();";
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@CardPrintId", request.CardPrintId);
-            parameters.Add("@CollectionId", request.CollectionId);
-            parameters.Add("@IsFoil", request.IsFoil);
-
             try
             {
+                var parameters = new DynamicParameters();
+                parameters.Add("@CardPrintId", request.CardPrintId);
+                parameters.Add("@CollectionId", request.CollectionId);
+                parameters.Add("@IsFoil", request.IsFoil);
+
                 using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
                 var lastId = await dbConnection.QueryAsync<int>(
                     sql: storedProcedure,
@@ -135,13 +144,15 @@ namespace DataAccess.Sqlite
             }
             catch (Exception ex)
             {
-                // TODO: Logging
-                throw ex;
+                Log.Error(ex, $"{nameof(SQLiteCollectionService)}: {nameof(AddOwnedCardAsync)}");
+                throw;
             }
         }
 
         public async Task DeleteOwnedCardsAsync(OwnedCardRequest request, int numberToDelete)
         {
+            Log.Debug($"{nameof(SQLiteCollectionService)}: {nameof(DeleteOwnedCardsAsync)}");
+
             var sql = @"
                 delete
                 from OwnedCard
@@ -157,14 +168,14 @@ namespace DataAccess.Sqlite
                         limit @NumberToDelete
                     )";
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@CardPrintId", request.CardPrintId);
-            parameters.Add("@CollectionId", request.CollectionId);
-            parameters.Add("@IsFoil", request.IsFoil);
-            parameters.Add("@NumberToDelete", numberToDelete);
-
             try
             {
+                var parameters = new DynamicParameters();
+                parameters.Add("@CardPrintId", request.CardPrintId);
+                parameters.Add("@CollectionId", request.CollectionId);
+                parameters.Add("@IsFoil", request.IsFoil);
+                parameters.Add("@NumberToDelete", numberToDelete);
+
                 using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
                 await dbConnection.ExecuteAsync(
                     sql: sql,
@@ -172,61 +183,93 @@ namespace DataAccess.Sqlite
             }
             catch (Exception ex)
             {
-                // TODO: Logging
-                throw ex;
+                Log.Error(ex, $"{nameof(SQLiteCollectionService)}: {nameof(DeleteOwnedCardsAsync)}");
+                throw;
             }
         }
 
         public async Task<CardCollection> GetCollectionAsync(int collectionId)
         {
+            Log.Debug($"{nameof(SQLiteCollectionService)}: {nameof(GetCollectionAsync)}: ById");
+
             var sql = @"
                 select
                     *
                 from [Collection]
                 where [Id] = @Id;";
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@Id", collectionId);
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@Id", collectionId);
 
-            using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
-            return await dbConnection.QueryFirstOrDefaultAsync<CardCollection>(
-                sql: sql,
-                param: parameters);
+                using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
+                return await dbConnection.QueryFirstOrDefaultAsync<CardCollection>(
+                    sql: sql,
+                    param: parameters);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"{nameof(SQLiteCollectionService)}: {nameof(GetCollectionAsync)}: ById");
+                throw;
+            }
         }
 
         public async Task<CardCollection> GetCollectionAsync(string name)
         {
+            Log.Debug($"{nameof(SQLiteCollectionService)}: {nameof(GetCollectionAsync)}: ByName");
+
             var sql = @"
                 select
                     *
                 from [Collection]
                 where [Name] = @Name;";
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@Name", name);
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@Name", name);
 
-            using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
-            return await dbConnection.QueryFirstOrDefaultAsync<CardCollection>(
-                sql: sql,
-                param: parameters);
+                using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
+                return await dbConnection.QueryFirstOrDefaultAsync<CardCollection>(
+                    sql: sql,
+                    param: parameters);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"{nameof(SQLiteCollectionService)}: {nameof(GetCollectionAsync)}: ByName");
+                throw;
+            }
         }
 
         public async Task<IEnumerable<CardCollection>> GetCollectionsAsync()
         {
+            Log.Debug($"{nameof(SQLiteCollectionService)}: {nameof(GetCollectionsAsync)}");
+
             var sql = @"
                 select
                     *
                 from [Collection];";
 
-            using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
-            var foundCollections = await dbConnection.QueryAsync<CardCollection>(
-                sql: sql);
+            try
+            {
+                using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
+                var foundCollections = await dbConnection.QueryAsync<CardCollection>(
+                    sql: sql);
 
-            return foundCollections ?? Enumerable.Empty<CardCollection>();
+                return foundCollections ?? Enumerable.Empty<CardCollection>();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"{nameof(SQLiteCollectionService)}: {nameof(GetCollectionsAsync)}");
+                throw;
+            }
         }
 
         public async Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesAsyncByCardId(int cardId)
         {
+            Log.Debug($"{nameof(SQLiteCollectionService)}: {nameof(GetOwnedCardsAggregatesAsyncByCardId)}");
+
             var storedProcedure = @"
                 select
                     cpd.CardId,
@@ -245,27 +288,29 @@ namespace DataAccess.Sqlite
                 inner join vw_CardPrintDetails as cpd on ocs.CardPrintId = cpd.Id
                 where cpd.CardId = @CardId;";
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@CardId", cardId);
-
-            IEnumerable<OwnedCardPrintAggregate> foundCollections = null;
             try
             {
+                var parameters = new DynamicParameters();
+                parameters.Add("@CardId", cardId);
+
                 using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
-                foundCollections = await dbConnection.QueryAsync<OwnedCardPrintAggregate>(
+                var foundCollections = await dbConnection.QueryAsync<OwnedCardPrintAggregate>(
                     sql: storedProcedure,
                     param: parameters);
+
+                return foundCollections ?? Enumerable.Empty<OwnedCardPrintAggregate>();
             }
             catch (Exception ex)
             {
-                throw ex;
+                Log.Error(ex, $"{nameof(SQLiteCollectionService)}: {nameof(GetOwnedCardsAggregatesAsyncByCardId)}");
+                throw;
             }
-
-            return foundCollections ?? Enumerable.Empty<OwnedCardPrintAggregate>();
         }
 
         public async Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesAsyncByCollectionId(int collectionId)
         {
+            Log.Debug($"{nameof(SQLiteCollectionService)}: {nameof(GetOwnedCardsAggregatesAsyncByCollectionId)}");
+
             var storedProcedure = @"
                 select
                     cpd.CardId,
@@ -284,27 +329,30 @@ namespace DataAccess.Sqlite
                 inner join vw_CardPrintDetails as cpd on ocs.CardPrintId = cpd.Id
                 where ocs.CollectionId = @CollectionId;";
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@CollectionId", collectionId);
-
-            IEnumerable<OwnedCardPrintAggregate> foundCollections = null;
             try
             {
+                var parameters = new DynamicParameters();
+                parameters.Add("@CollectionId", collectionId);
+
                 using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
-                foundCollections = await dbConnection.QueryAsync<OwnedCardPrintAggregate>(
+                var foundCollections = await dbConnection.QueryAsync<OwnedCardPrintAggregate>(
                     sql: storedProcedure,
                     param: parameters);
+
+                return foundCollections ?? Enumerable.Empty<OwnedCardPrintAggregate>();
             }
             catch (Exception ex)
             {
-                throw ex;
+                Log.Error(ex, $"{nameof(SQLiteCollectionService)}: {nameof(GetOwnedCardsAggregatesAsyncByCollectionId)}");
+                throw;
             }
 
-            return foundCollections ?? Enumerable.Empty<OwnedCardPrintAggregate>();
         }
 
         public async Task<IEnumerable<OwnedCardExport>> GetOwnedCardsExportFormatAsync()
         {
+            Log.Debug($"{nameof(SQLiteCollectionService)}: {nameof(GetOwnedCardsExportFormatAsync)}");
+
             var sql = @"
                 select 
                     cd.[Name] as CardName,
@@ -320,18 +368,18 @@ namespace DataAccess.Sqlite
                 inner join [Set] as s on cp.SetId = s.Id
                 order by c.Id;";
 
-            IEnumerable<OwnedCardExport> foundCollections = null;
             try
             {
                 using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
-                foundCollections = await dbConnection.QueryAsync<OwnedCardExport>(sql: sql);
+                var foundCollections = await dbConnection.QueryAsync<OwnedCardExport>(sql: sql);
+
+                return foundCollections ?? Enumerable.Empty<OwnedCardExport>();
             }
             catch (Exception ex)
             {
-                throw ex;
+                Log.Error(ex, $"{nameof(SQLiteCollectionService)}: {nameof(GetOwnedCardsExportFormatAsync)}");
+                throw;
             }
-
-            return foundCollections ?? Enumerable.Empty<OwnedCardExport>();
         }
     }
 }

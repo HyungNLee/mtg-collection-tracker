@@ -10,12 +10,10 @@ using DesktopApp.Event;
 using DesktopApp.Event.EventModels;
 using DesktopApp.MVVM.Model;
 
-using Microsoft.Extensions.Options;
-
 using Prism.Commands;
 using Prism.Mvvm;
 
-using DataAccessModels = DataAccess.Models;
+using Serilog;
 
 namespace DesktopApp.MVVM.ViewModel
 {
@@ -64,12 +62,14 @@ namespace DesktopApp.MVVM.ViewModel
 
         public MagicDatabaseViewModel()
         {
+            Log.Debug($"{nameof(MagicDatabaseViewModel)}: Constructor");
+
             _cardPrintService = new SQLiteCardPrintService();
 
             CardPrints = new ObservableCollection<CardPrint>();
             FilteredCardPrints = new ObservableCollection<CardPrint>();
 
-            LoadCardPrintsAsync();
+            var _ = LoadCardPrintsAsync();
         }
 
         /// <summary>
@@ -78,6 +78,8 @@ namespace DesktopApp.MVVM.ViewModel
         /// <returns></returns>
         public async Task LoadCardPrintsAsync()
         {
+            Log.Debug($"{nameof(MagicDatabaseViewModel)}: {nameof(LoadCardPrintsAsync)}");
+
             var allCardPrints = await _cardPrintService.GetCardPrintDetailsAsync();
 
             foreach (var cardPrint in allCardPrints)
@@ -107,6 +109,8 @@ namespace DesktopApp.MVVM.ViewModel
         {
             get
             {
+                Log.Debug($"{nameof(MagicDatabaseViewModel)}: {nameof(AddOwnedCardCommand)}");
+
                 var request = new DelegateCommand(() => AddOwnedCardRequestPublish());
                 return request;
             }
@@ -119,6 +123,8 @@ namespace DesktopApp.MVVM.ViewModel
         {
             get
             {
+                Log.Debug($"{nameof(MagicDatabaseViewModel)}: {nameof(AddFoilOwnedCardCommand)}");
+
                 var request = new DelegateCommand(() => AddOwnedCardRequestPublish(true));
                 return request;
             }
@@ -131,6 +137,8 @@ namespace DesktopApp.MVVM.ViewModel
         {
             get
             {
+                Log.Debug($"{nameof(MagicDatabaseViewModel)}: {nameof(CardFilterCommand)}");
+
                 return new DelegateCommand(() => FilterCardPrints());
             }
         }
@@ -140,6 +148,8 @@ namespace DesktopApp.MVVM.ViewModel
         /// </summary>
         private void FilterCardPrints()
         {
+            Log.Debug($"{nameof(MagicDatabaseViewModel)}: {nameof(FilterCardPrints)}");
+
             FilteredCardPrints.Clear();
 
             foreach (var cardPrint in _cardPrints)
@@ -167,6 +177,8 @@ namespace DesktopApp.MVVM.ViewModel
         /// <returns></returns>
         private void AddOwnedCardRequestPublish(bool isFoil = false)
         {
+            Log.Debug($"{nameof(MagicDatabaseViewModel)}: {nameof(AddOwnedCardRequestPublish)}");
+
             if (SelectedCardPrint == null)
             {
                 return;

@@ -1,4 +1,6 @@
-﻿namespace DesktopApp.Event.EventModels
+﻿using Serilog;
+
+namespace DesktopApp.Event.EventModels
 {
     /// <summary>
     /// An event that represents a request to add a new owned card.
@@ -10,6 +12,8 @@
 
         public AddOwnedCardRequestEvent(int cardPrintId, bool isFoil = false)
         {
+            Log.Debug($"{nameof(AddOwnedCardRequestEvent)}: Constructor");
+
             CardPrintId = cardPrintId;
             IsFoil = isFoil;
         }

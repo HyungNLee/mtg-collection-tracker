@@ -1,4 +1,6 @@
-﻿namespace DesktopApp.Event.EventModels
+﻿using Serilog;
+
+namespace DesktopApp.Event.EventModels
 {
     internal enum CardOperation
     {
@@ -18,6 +20,8 @@
 
         public CardOperationSuccessEvent(int cardPrintId, bool isFoil, int count, CardOperation operationType)
         {
+            Log.Debug($"{nameof(CardOperationSuccessEvent)}: Constructor");
+
             CardPrintId = cardPrintId;
             IsFoil = isFoil;
             Count = count;
