@@ -6,6 +6,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
+using DesktopApp.Utils;
+
+using Serilog;
+
 namespace DesktopApp
 {
     /// <summary>
@@ -13,5 +17,11 @@ namespace DesktopApp
     /// </summary>
     public partial class App : Application
     {
+        public App() : base()
+        {
+            FileLogger.CreateFileLogger();
+
+            Log.Debug($"{nameof(App)}: Constructor");
+        }
     }
 }

@@ -4,18 +4,25 @@ namespace DataAccess.Sqlite
 {
     public static class SQLiteDatabaseCreator
     {
+        /// <summary>
+        /// Gets the database file name.
+        /// </summary>
         public const string DatabaseName = "MtgCollection.db";
+
+        /// <summary>
+        /// Gets the full file path to the database file.
+        /// </summary>
         public static readonly string DatabaseFilePath = $"{Path.Combine(Directory.GetCurrentDirectory(), DatabaseName)}";
 
         /// <summary>
         /// Returns the connection string to the SQLite database.
         /// </summary>
-        public static string GetConnectionString = $"Data Source={DatabaseFilePath}";
+        internal static string GetConnectionString = $"Data Source={DatabaseFilePath}";
 
         /// <summary>
         /// Creates the SQLite database if it doesn't exist.
         /// </summary>
-        public static void CreateDatabaseIfNotExists()
+        internal static void CreateDatabaseIfNotExists()
         {
             if (!File.Exists(DatabaseFilePath))
             {
