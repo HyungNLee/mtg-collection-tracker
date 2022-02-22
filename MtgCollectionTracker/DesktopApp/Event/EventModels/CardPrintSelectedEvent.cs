@@ -1,5 +1,7 @@
 ﻿using DesktopApp.MVVM.Model;
 
+using Serilog;
+
 namespace DesktopApp.Event.EventModels
 {
     /// <summary>
@@ -11,6 +13,8 @@ namespace DesktopApp.Event.EventModels
 
         public CardPrintSelectedEvent(CardPrint selectedCardPrint)
         {
+            Log.Debug($"{nameof(CardPrintSelectedEvent)}: Constructor");
+
             SelectedCardPrint = selectedCardPrint;
         }
     }

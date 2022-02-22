@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 
 using DataAccess.Services;
@@ -9,11 +8,9 @@ using DesktopApp.Event;
 using DesktopApp.Event.EventModels;
 using DesktopApp.MVVM.Model;
 
-using Microsoft.Extensions.Options;
-
 using Prism.Mvvm;
 
-using DataAccessModels = DataAccess.Models;
+using Serilog;
 
 namespace DesktopApp.MVVM.ViewModel
 {
@@ -31,7 +28,7 @@ namespace DesktopApp.MVVM.ViewModel
             set
             {
                 SetProperty(ref _selectedCardPrint, value);
-                GetOwnedCardsByCardAsync();
+                var _ = GetOwnedCardsByCardAsync();
             }
         }
 
@@ -47,6 +44,8 @@ namespace DesktopApp.MVVM.ViewModel
 
         public SelectedCardPrintViewModel()
         {
+            Log.Debug($"{nameof(SelectedCardPrintViewModel)}: Constructor");
+
             _collectionService = new SQLiteCollectionService();
 
             OwnedCards = new ObservableCollection<OwnedCardPrintAggregate>();
@@ -66,6 +65,8 @@ namespace DesktopApp.MVVM.ViewModel
         /// <returns></returns>
         private async Task GetOwnedCardsByCardAsync()
         {
+            Log.Debug($"{nameof(SelectedCardPrintViewModel)}: {nameof(GetOwnedCardsByCardAsync)}");
+
             if (SelectedCardPrint == null)
             {
                 return;

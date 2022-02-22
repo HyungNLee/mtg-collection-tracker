@@ -12,7 +12,7 @@ namespace DesktopApp.Utils
         private static readonly string _defaultLogFileName = "log.txt";
         private static readonly LoggingLevelSwitch _logLevelSwitch = new();
 
-        public static ILogger CreateFileLogger(LogEventLevel logEventLevel = LogEventLevel.Verbose)
+        public static ILogger CreateFileLogger(LogEventLevel logEventLevel = LogEventLevel.Debug)
         {
             _logLevelSwitch.MinimumLevel = logEventLevel;
 

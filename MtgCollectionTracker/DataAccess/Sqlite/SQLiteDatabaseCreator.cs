@@ -1,5 +1,7 @@
 ﻿using System.Data.SQLite;
 
+using Serilog;
+
 namespace DataAccess.Sqlite
 {
     public static class SQLiteDatabaseCreator
@@ -24,8 +26,12 @@ namespace DataAccess.Sqlite
         /// </summary>
         internal static void CreateDatabaseIfNotExists()
         {
+            Log.Debug($"{nameof(SQLiteDatabaseCreator)}: {nameof(CreateDatabaseIfNotExists)}");
+
             if (!File.Exists(DatabaseFilePath))
             {
+                Log.Information($"Database not found. Creating database file.");
+
                 SQLiteConnection.CreateFile(DatabaseFilePath);
 
                 CreateCardTable();
@@ -42,154 +48,234 @@ namespace DataAccess.Sqlite
 
         private static void CreateCardTable()
         {
-            using var db = new SQLiteConnection(GetConnectionString);
-            db.Open();
-            string sql = @"
-                    CREATE TABLE [Card] (
-                        Id    INTEGER NOT NULL UNIQUE,
-                        Name  TEXT NOT NULL UNIQUE,
-                        PRIMARY KEY(Id AUTOINCREMENT)
-                    );";
+            Log.Debug($"{nameof(SQLiteDatabaseCreator)}: {nameof(CreateCardTable)}");
 
-            SQLiteCommand command = new(sql, db);
-            command.ExecuteNonQuery();
+            try
+            {
+                using var db = new SQLiteConnection(GetConnectionString);
+                db.Open();
+                string sql = @"
+                        CREATE TABLE [Card] (
+                            Id    INTEGER NOT NULL UNIQUE,
+                            Name  TEXT NOT NULL UNIQUE,
+                            PRIMARY KEY(Id AUTOINCREMENT)
+                        );";
+
+                SQLiteCommand command = new(sql, db);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"{ nameof(SQLiteDatabaseCreator)}: { nameof(CreateCardTable)}");
+                throw;
+            }
         }
 
         private static void CreateSetTable()
         {
-            using var db = new SQLiteConnection(GetConnectionString);
-            db.Open();
-            string sql = @"
-                    CREATE TABLE [Set] (
-                        Id    INTEGER NOT NULL UNIQUE,
-                        Name  TEXT NOT NULL UNIQUE,
-                        PRIMARY KEY(Id AUTOINCREMENT)
-                    );";
+            Log.Debug($"{nameof(SQLiteDatabaseCreator)}: {nameof(CreateSetTable)}");
 
-            SQLiteCommand command = new(sql, db);
-            command.ExecuteNonQuery();
+            try
+            {
+                using var db = new SQLiteConnection(GetConnectionString);
+                db.Open();
+                string sql = @"
+                        CREATE TABLE [Set] (
+                            Id    INTEGER NOT NULL UNIQUE,
+                            Name  TEXT NOT NULL UNIQUE,
+                            PRIMARY KEY(Id AUTOINCREMENT)
+                        );";
+
+                SQLiteCommand command = new(sql, db);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"{ nameof(SQLiteDatabaseCreator)}: { nameof(CreateSetTable)}");
+                throw;
+            }
         }
 
         private static void CreateCardPrintTable()
         {
-            using var db = new SQLiteConnection(GetConnectionString);
-            db.Open();
-            string sql = @"
-                    CREATE TABLE CardPrint (
-                        Id	INTEGER NOT NULL UNIQUE,
-                        CardId	INTEGER NOT NULL,
-                        SetId	INTEGER NOT NULL,
-                        PictureUrl	TEXT,
-                        FlipPictureUrl	TEXT,
-                        UNIQUE(CardId,SetId),
-                        FOREIGN KEY(SetId) REFERENCES [Set](Id),
-                        FOREIGN KEY(CardId) REFERENCES Card(Id),
-                        PRIMARY KEY(Id AUTOINCREMENT)
-                    );";
+            Log.Debug($"{nameof(SQLiteDatabaseCreator)}: {nameof(CreateCardPrintTable)}");
 
-            SQLiteCommand command = new(sql, db);
-            command.ExecuteNonQuery();
+            try
+            {
+                using var db = new SQLiteConnection(GetConnectionString);
+                db.Open();
+                string sql = @"
+                        CREATE TABLE CardPrint (
+                            Id	INTEGER NOT NULL UNIQUE,
+                            CardId	INTEGER NOT NULL,
+                            SetId	INTEGER NOT NULL,
+                            PictureUrl	TEXT,
+                            FlipPictureUrl	TEXT,
+                            UNIQUE(CardId,SetId),
+                            FOREIGN KEY(SetId) REFERENCES [Set](Id),
+                            FOREIGN KEY(CardId) REFERENCES Card(Id),
+                            PRIMARY KEY(Id AUTOINCREMENT)
+                        );";
+
+                SQLiteCommand command = new(sql, db);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"{ nameof(SQLiteDatabaseCreator)}: { nameof(CreateCardPrintTable)}");
+                throw;
+            }
         }
 
         private static void CreateCollectionTable()
         {
-            using var db = new SQLiteConnection(GetConnectionString);
-            db.Open();
-            string sql = @"
-                    CREATE TABLE [Collection] (
-                        Id	INTEGER NOT NULL UNIQUE,
-                        Name	TEXT NOT NULL UNIQUE,
-                        IsDeck	INTEGER NOT NULL DEFAULT 0 CHECK(IsDeck = 0 OR IsDeck = 1),
-                        MainboardId	INTEGER,
-                        SideboardId	INTEGER,
-                        CHECK((IsDeck = 0 AND MainboardId IS null AND SideboardId IS null) OR (IsDeck = 1 AND ((MainboardId IS null AND SideboardId IS null) OR (MainboardId IS NOT null AND SideboardId IS null) OR (MainboardId IS null AND SideboardId IS NOT null)))),
-                        PRIMARY KEY(Id AUTOINCREMENT)
-                    );";
+            Log.Debug($"{nameof(SQLiteDatabaseCreator)}: {nameof(CreateCollectionTable)}");
 
-            SQLiteCommand command = new(sql, db);
-            command.ExecuteNonQuery();
+            try
+            {
+                using var db = new SQLiteConnection(GetConnectionString);
+                db.Open();
+                string sql = @"
+                        CREATE TABLE [Collection] (
+                            Id	INTEGER NOT NULL UNIQUE,
+                            Name	TEXT NOT NULL UNIQUE,
+                            IsDeck	INTEGER NOT NULL DEFAULT 0 CHECK(IsDeck = 0 OR IsDeck = 1),
+                            MainboardId	INTEGER,
+                            SideboardId	INTEGER,
+                            CHECK((IsDeck = 0 AND MainboardId IS null AND SideboardId IS null) OR (IsDeck = 1 AND ((MainboardId IS null AND SideboardId IS null) OR (MainboardId IS NOT null AND SideboardId IS null) OR (MainboardId IS null AND SideboardId IS NOT null)))),
+                            PRIMARY KEY(Id AUTOINCREMENT)
+                        );";
+
+                SQLiteCommand command = new(sql, db);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"{ nameof(SQLiteDatabaseCreator)}: { nameof(CreateCollectionTable)}");
+                throw;
+            }
         }
 
         private static void CreateOwnedCardTable()
         {
-            using var db = new SQLiteConnection(GetConnectionString);
-            db.Open();
-            string sql = @"
-                    CREATE TABLE OwnedCard (
-                        Id	INTEGER NOT NULL UNIQUE,
-                        CardPrintId	INTEGER NOT NULL,
-                        CollectionId	INTEGER NOT NULL,
-                        IsFoil	INTEGER NOT NULL DEFAULT 0 CHECK(IsFoil = 0 OR IsFoil = 1),
-                        PRIMARY KEY(Id AUTOINCREMENT),
-                        FOREIGN KEY(CardPrintId) REFERENCES CardPrint(Id),
-                        FOREIGN KEY(CollectionId) REFERENCES [Collection](Id)
-                    );";
+            Log.Debug($"{nameof(SQLiteDatabaseCreator)}: {nameof(CreateOwnedCardTable)}");
 
-            SQLiteCommand command = new(sql, db);
-            command.ExecuteNonQuery();
+            try
+            {
+                using var db = new SQLiteConnection(GetConnectionString);
+                db.Open();
+                string sql = @"
+                        CREATE TABLE OwnedCard (
+                            Id	INTEGER NOT NULL UNIQUE,
+                            CardPrintId	INTEGER NOT NULL,
+                            CollectionId	INTEGER NOT NULL,
+                            IsFoil	INTEGER NOT NULL DEFAULT 0 CHECK(IsFoil = 0 OR IsFoil = 1),
+                            PRIMARY KEY(Id AUTOINCREMENT),
+                            FOREIGN KEY(CardPrintId) REFERENCES CardPrint(Id),
+                            FOREIGN KEY(CollectionId) REFERENCES [Collection](Id)
+                        );";
+
+                SQLiteCommand command = new(sql, db);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"{ nameof(SQLiteDatabaseCreator)}: { nameof(CreateOwnedCardTable)}");
+                throw;
+            }
         }
 
         private static void CreateCardPrintDetailsView()
         {
-            using var db = new SQLiteConnection(GetConnectionString);
-            db.Open();
-            string sql = @"        
-                CREATE VIEW vw_CardPrintDetails
-                as
-                    select
-                        cp.Id,
-                        cp.CardId,
-                        c.[Name] as CardName,
-                        cp.SetId,
-                        s.[Name] as SetName,
-                        cp.PictureUrl,
-                        cp.FlipPictureUrl
-                    from CardPrint as cp
-                    inner join [Card] as c on cp.CardId = c.Id
-                    inner join [Set] as s on cp.SetId = s.Id";
+            Log.Debug($"{nameof(SQLiteDatabaseCreator)}: {nameof(CreateCardPrintDetailsView)}");
 
-            SQLiteCommand command = new(sql, db);
-            command.ExecuteNonQuery();
+            try
+            {
+                using var db = new SQLiteConnection(GetConnectionString);
+                db.Open();
+                string sql = @"        
+                    CREATE VIEW vw_CardPrintDetails
+                    as
+                        select
+                            cp.Id,
+                            cp.CardId,
+                            c.[Name] as CardName,
+                            cp.SetId,
+                            s.[Name] as SetName,
+                            cp.PictureUrl,
+                            cp.FlipPictureUrl
+                        from CardPrint as cp
+                        inner join [Card] as c on cp.CardId = c.Id
+                        inner join [Set] as s on cp.SetId = s.Id";
+
+                SQLiteCommand command = new(sql, db);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"{ nameof(SQLiteDatabaseCreator)}: { nameof(CreateCardPrintDetailsView)}");
+                throw;
+            }
         }
 
         private static void CreateOwnedCardSumView()
         {
-            using var db = new SQLiteConnection(GetConnectionString);
-            db.Open();
-            string sql = @"        
-                CREATE VIEW vw_OwnedCardSum
-                as
-                    select
-                        CardPrintId,
-                        CollectionId,
-                        IsFoil,
-                        Count(*) as [Count]
-                    from OwnedCard
-                    group by
-                        CardPrintId,
-                        CollectionId,
-                        IsFoil;";
+            Log.Debug($"{nameof(SQLiteDatabaseCreator)}: {nameof(CreateOwnedCardSumView)}");
 
-            SQLiteCommand command = new(sql, db);
-            command.ExecuteNonQuery();
+            try
+            {
+                using var db = new SQLiteConnection(GetConnectionString);
+                db.Open();
+                string sql = @"        
+                    CREATE VIEW vw_OwnedCardSum
+                    as
+                        select
+                            CardPrintId,
+                            CollectionId,
+                            IsFoil,
+                            Count(*) as [Count]
+                        from OwnedCard
+                        group by
+                            CardPrintId,
+                            CollectionId,
+                            IsFoil;";
+
+                SQLiteCommand command = new(sql, db);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"{ nameof(SQLiteDatabaseCreator)}: { nameof(CreateOwnedCardSumView)}");
+                throw;
+            }
         }
 
         private static void InsertMainCollection()
         {
-            using var db = new SQLiteConnection(GetConnectionString);
-            db.Open();
-            string sql = @"        
-                insert into [Collection] (
-                    [Name],
-                    IsDeck
-                )
-                values (
-                    'Main Collection',
-                    0
-                );";
+            Log.Debug($"{nameof(SQLiteDatabaseCreator)}: {nameof(InsertMainCollection)}");
 
-            SQLiteCommand command = new(sql, db);
-            command.ExecuteNonQuery();
+            try
+            {
+                using var db = new SQLiteConnection(GetConnectionString);
+                db.Open();
+                string sql = @"        
+                    insert into [Collection] (
+                        [Name],
+                        IsDeck
+                    )
+                    values (
+                        'Main Collection',
+                        0
+                    );";
+
+                SQLiteCommand command = new(sql, db);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"{ nameof(SQLiteDatabaseCreator)}: { nameof(InsertMainCollection)}");
+                throw;
+            }
         }
     }
 }
