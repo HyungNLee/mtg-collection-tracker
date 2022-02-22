@@ -13,6 +13,7 @@ using DataAccess.Sqlite;
 using DesktopApp.Event;
 using DesktopApp.Event.EventModels;
 using DesktopApp.MVVM.Model;
+using DesktopApp.MVVM.View;
 
 using Prism.Commands;
 using Prism.Mvvm;
@@ -126,6 +127,11 @@ namespace DesktopApp.MVVM.ViewModel
         /// </summary>
         public DelegateCommand ExportCardCommand { get; private set; }
 
+        /// <summary>
+        /// Command to open up the AddCollectionDialogWindow.
+        /// </summary>
+        public DelegateCommand ShowAddCollectionDialogCommand { get; private set; }
+
         public CollectionViewModel()
         {
             Log.Debug($"{nameof(CollectionViewModel)}: Constructor");
@@ -140,6 +146,7 @@ namespace DesktopApp.MVVM.ViewModel
             AddSideboardCommand = new DelegateCommand(async () => await AddSideboardAsync());
             ImportCardCommand = new DelegateCommand(async () => await ImportOwnedCardsJsonAsync());
             ExportCardCommand = new DelegateCommand(async () => await ExportOwnedCardsJsonAsync());
+            ShowAddCollectionDialogCommand = new DelegateCommand(() => ShowAddCollectionDialog());
 
             var _ = LoadCollectionsAsync();
 
@@ -478,7 +485,6 @@ namespace DesktopApp.MVVM.ViewModel
         {
             Log.Debug($"{nameof(CollectionViewModel)}: {nameof(ImportOwnedCardsJsonAsync)}");
 
-
             try
             {
                 // Create backup of database first.
@@ -557,6 +563,18 @@ namespace DesktopApp.MVVM.ViewModel
                 Log.Error(ex, $"{nameof(CollectionViewModel)}: {nameof(ImportOwnedCardsJsonAsync)}");
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Opens up the "AddCollectionDialogWindow"
+        /// </summary>
+        public void ShowAddCollectionDialog()
+        {
+            Log.Debug($"{nameof(CollectionViewModel)}: {nameof(ShowAddCollectionDialog)}");
+
+            var dialogWindow = new AddCollectionDialogWindow();
+
+            var result = dialogWindow.ShowDialog();
         }
     }
 }
