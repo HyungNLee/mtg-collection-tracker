@@ -19,12 +19,7 @@ namespace CardIngester
         {
             Console.WriteLine("Starting Scryfall MTG Card Ingester...");
 
-            var dataAccessConfig = new DataAccessModels.DataAccessConfig
-            {
-                ConnectionString = @"Server=localhost;Database=MtgCollection;Trusted_Connection=True;"
-            };
-            var options = Options.Create(dataAccessConfig);
-            var dbService = new DataAccess.Services.CardPrintService(options);
+            var dbService = new DataAccess.Sqlite.SQLiteCardPrintService();
             var ingesterService = new CardIngesterService(dbService);
 
 			Console.WriteLine("Please enter the full path to the Scryfall cards json file.");

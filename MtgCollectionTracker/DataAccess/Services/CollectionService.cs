@@ -121,6 +121,11 @@ namespace DataAccess.Services
             }
         }
 
+        public Task<CardCollection> GetCollectionAsync(int collectionId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<IEnumerable<CardCollection>> GetCollectionsAsync()
         {
             var storedProcedure = "Collection_Select";
