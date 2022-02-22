@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 
 using DataAccess.Services;
+using DataAccess.Sqlite;
 
 using DesktopApp.Event;
 using DesktopApp.Event.EventModels;
@@ -63,12 +64,7 @@ namespace DesktopApp.MVVM.ViewModel
 
         public MagicDatabaseViewModel()
         {
-            var dataAccessConfig = new DataAccessModels.DataAccessConfig
-            {
-                ConnectionString = @"Server=localhost;Database=MtgCollection;Trusted_Connection=True;"
-            };
-            var config = Options.Create(dataAccessConfig);
-            _cardPrintService = new CardPrintService(config);
+            _cardPrintService = new SQLiteCardPrintService();
 
             CardPrints = new ObservableCollection<CardPrint>();
             FilteredCardPrints = new ObservableCollection<CardPrint>();

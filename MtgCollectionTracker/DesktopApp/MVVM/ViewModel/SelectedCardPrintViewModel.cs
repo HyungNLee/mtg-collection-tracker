@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using DataAccess.Services;
+using DataAccess.Sqlite;
 
 using DesktopApp.Event;
 using DesktopApp.Event.EventModels;
@@ -46,12 +47,7 @@ namespace DesktopApp.MVVM.ViewModel
 
         public SelectedCardPrintViewModel()
         {
-            var dataAccessConfig = new DataAccessModels.DataAccessConfig
-            {
-                ConnectionString = @"Server=localhost;Database=MtgCollection;Trusted_Connection=True;"
-            };
-            var config = Options.Create(dataAccessConfig);
-            _collectionService = new CollectionService(config);
+            _collectionService = new SQLiteCollectionService();
 
             OwnedCards = new ObservableCollection<OwnedCardPrintAggregate>();
 

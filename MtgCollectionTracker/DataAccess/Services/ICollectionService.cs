@@ -32,6 +32,14 @@ namespace DataAccess.Services
         /// <returns></returns>
         Task DeleteOwnedCardsAsync(OwnedCardRequest request, int numberToDelete);
 
+
+        /// <summary>
+        /// Gets a collection by the Id.
+        /// </summary>
+        /// <param name="collectionId"></param>
+        /// <returns>Returns the found collection. If no collection is found, will return a null value.</returns>
+        Task<CardCollection> GetCollectionAsync(int collectionId);
+
         /// <summary>
         /// Gets all collections.
         /// </summary>
