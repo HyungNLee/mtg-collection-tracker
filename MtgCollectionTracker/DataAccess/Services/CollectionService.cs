@@ -108,6 +108,13 @@ namespace DataAccess.Services
             }
         }
 
+        public Task RemoveCollection(int collectionId)
+        {
+            Log.Debug($"{nameof(CollectionService)}: {nameof(RemoveCollection)}");
+
+            throw new NotImplementedException();
+        }
+
         public async Task DeleteOwnedCardsAsync(OwnedCardRequest request, int numberToDelete)
         {
             Log.Debug($"{nameof(CollectionService)}: {nameof(DeleteOwnedCardsAsync)}");

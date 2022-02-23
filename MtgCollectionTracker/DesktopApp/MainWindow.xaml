@@ -9,8 +9,8 @@
         xmlns:view="clr-namespace:DesktopApp.MVVM.View"
         mc:Ignorable="d"
         Title="MTG Collection Tracker"
-        Height="1100"
-        Width="1800"
+        Height="1200"
+        Width="2000"
         ResizeMode="CanResizeWithGrip"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -35,7 +35,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition Width="5"/>
-            <ColumnDefinition Width="400"/>
+            <ColumnDefinition Width="600"/>
         </Grid.ColumnDefinitions>
 
         <Frame Grid.Row="0" Grid.Column="0">

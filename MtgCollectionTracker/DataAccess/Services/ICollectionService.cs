@@ -25,6 +25,15 @@ namespace DataAccess.Services
         Task<int> AddOwnedCardAsync(OwnedCardRequest request);
 
         /// <summary>
+        /// Deletes a collection.
+        /// All cards in the collection will be moved to the main collection.
+        /// If the collection is a deck, the sideboard will also be deleted.
+        /// </summary>
+        /// <param name="collectionId"></param>
+        /// <returns></returns>
+        Task RemoveCollection(int collectionId);
+
+        /// <summary>
         /// Deletes the given number of matching card prints in the given set.
         /// </summary>
         /// <param name="request"></param>
