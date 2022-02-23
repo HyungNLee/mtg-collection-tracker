@@ -10,19 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\PlusButton.png" />
-    <None Remove="Assets\SideboardButton.png" />
-    <None Remove="Assets\TrashButton.png" />
+    <None Remove="Resources\PlusButton.png" />
+    <None Remove="Resources\SideboardButton.png" />
+    <None Remove="Resources\TrashButton.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\AppIcon.ico" />
-    <Content Include="Assets\PlusButton.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\TrashButton.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -38,9 +32,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\SideboardButton.png">
+    <Resource Include="Resources\PlusButton.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </Resource>
+    <Resource Include="Resources\SideboardButton.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\TrashButton.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>
