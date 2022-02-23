@@ -9,7 +9,7 @@ namespace DesktopApp.Event.EventModels
     }
 
     /// <summary>
-    /// Represents a successful add or delete card operation.
+    /// Represents that a card operation was successful.
     /// </summary>
     internal class CardOperationSuccessEvent : IApplicationEvent
     {

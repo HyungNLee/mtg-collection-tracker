@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 using DataAccess.Services;
@@ -132,6 +133,11 @@ namespace DesktopApp.MVVM.ViewModel
         /// </summary>
         public DelegateCommand ShowAddCollectionDialogCommand { get; private set; }
 
+        /// <summary>
+        /// Command to show the DeleteCollectionDialogWindow.
+        /// </summary>
+        public DelegateCommand ShowDeleteCollectionDialogCommand { get; private set; }
+
         public CollectionViewModel()
         {
             Log.Debug($"{nameof(CollectionViewModel)}: Constructor");
@@ -147,6 +153,7 @@ namespace DesktopApp.MVVM.ViewModel
             ImportCardCommand = new DelegateCommand(async () => await ImportOwnedCardsJsonAsync());
             ExportCardCommand = new DelegateCommand(async () => await ExportOwnedCardsJsonAsync());
             ShowAddCollectionDialogCommand = new DelegateCommand(() => ShowAddCollectionDialog());
+            ShowDeleteCollectionDialogCommand = new DelegateCommand(() => ShowDeleteCollectionDialog());
 
             var _ = LoadCollectionsAsync();
 
@@ -568,13 +575,59 @@ namespace DesktopApp.MVVM.ViewModel
         /// <summary>
         /// Opens up the "AddCollectionDialogWindow"
         /// </summary>
-        public void ShowAddCollectionDialog()
+        private void ShowAddCollectionDialog()
         {
             Log.Debug($"{nameof(CollectionViewModel)}: {nameof(ShowAddCollectionDialog)}");
 
             var dialogWindow = new AddCollectionDialogWindow();
 
             var result = dialogWindow.ShowDialog();
+        }
+
+        /// <summary>
+        /// Opens up a confirmation dialog window to delete a collection.
+        /// </summary>
+        private async void ShowDeleteCollectionDialog()
+        {
+            Log.Debug($"{nameof(CollectionViewModel)}: {nameof(ShowDeleteCollectionDialog)}");
+
+            if (SelectedCollection == null)
+            {
+                return;
+            }
+
+            if (SelectedCollection.Id == 1)
+            {
+                // Selected Collection is the main collection
+                MessageBox.Show(
+                    $"The {SelectedCollection.Name} is the default collection and can't be deleted.",
+                    "Collection", MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+                return;
+            }
+
+            string message = $"Are you sure you want to delete {SelectedCollection.Name}?\nAny cards in this collection/deck will be moved to the main collection.";
+
+            if (MessageBox.Show(message, "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Stop) == MessageBoxResult.Yes)
+            {
+                await _collectionService.RemoveCollection(SelectedCollection.Id);
+
+                await RefreshAllDataAsync();
+            }
+        }
+
+        /// <summary>
+        /// Clears and refreshs all data and datagrids.
+        /// </summary>
+        /// <returns></returns>
+        private async Task RefreshAllDataAsync()
+        {
+            SelectedCollection = null;
+            SelectedOwnedCard = null;
+            await LoadCollectionsAsync();
+            OwnedCards.Clear();
+            FilterOwnedCards();
+            // TODO: Refresh selected card datagrid.
         }
     }
 }
