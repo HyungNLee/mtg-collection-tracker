@@ -26,7 +26,7 @@
                 ClickMode="Release"
                 Command="{Binding ShowAddCollectionDialogCommand}"
                 ToolTip="Add a collection or deck.">
-                <Image Source="\Assets\PlusButton.png" />
+                <Image Source="pack://application:,,,/MtgCollectionTracker;component/Resources/PlusButton.png" />
             </Button>
 
             <Button
@@ -35,7 +35,7 @@
                 ClickMode="Release"
                 Command="{Binding AddSideboardCommand}"
                 ToolTip="Creates a sideboard for a deck.">
-                <Image Source="\Assets\SideboardButton.png"/>
+                <Image Source="pack://application:,,,/MtgCollectionTracker;component/Resources/SideboardButton.png"/>
             </Button>
 
             <Button
@@ -45,7 +45,7 @@
                 Command="{Binding ShowDeleteCollectionDialogCommand}"
                 ToolTip="Deletes the current collection or deck."
                 HorizontalAlignment="Right">
-                <Image Source="\Assets\TrashButton.png" />
+                <Image Source="pack://application:,,,/MtgCollectionTracker;component/Resources/TrashButton.png" />
             </Button>
         </StackPanel>
 
