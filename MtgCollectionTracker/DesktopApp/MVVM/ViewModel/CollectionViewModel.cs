@@ -352,7 +352,7 @@ namespace DesktopApp.MVVM.ViewModel
 
             await _collectionService.AddOwnedCardAsync(newRequest);
 
-            var cardOperationSuccessEvent = new CardOperationSuccessEvent(cardPrintId, isFoil, 1, CardOperation.Add);
+            var cardOperationSuccessEvent = new CardOperationSuccessEvent();
             ApplicationEventManager.Instance.Publish(cardOperationSuccessEvent);
 
             // If card already exists in the list, don't refresh the whole list. Just update the count property.
@@ -393,7 +393,7 @@ namespace DesktopApp.MVVM.ViewModel
 
             await _collectionService.DeleteOwnedCardsAsync(request, numberToDelete);
 
-            var cardOperationSuccessEvent = new CardOperationSuccessEvent(SelectedOwnedCard.CardPrintId, SelectedOwnedCard.IsFoil, numberToDelete, CardOperation.Delete);
+            var cardOperationSuccessEvent = new CardOperationSuccessEvent();
             ApplicationEventManager.Instance.Publish(cardOperationSuccessEvent);
 
             if (deleteAll || SelectedOwnedCard.Count == 1)
@@ -627,7 +627,9 @@ namespace DesktopApp.MVVM.ViewModel
             await LoadCollectionsAsync();
             OwnedCards.Clear();
             FilterOwnedCards();
-            // TODO: Refresh selected card datagrid.
+
+            // Refreshes the selected card datagrid.
+            ApplicationEventManager.Instance.Publish(new CardOperationSuccessEvent());
         }
     }
 }
