@@ -55,29 +55,6 @@
 
         </DataGrid>
 
-        <Button
-            x:Name="btnImport"
-            Grid.Row="2"
-            Grid.Column="0"
-            HorizontalAlignment="Center"
-            Margin="0,0,100,0"
-            Height="25"
-            FontSize="12"
-            ClickMode="Release"
-            Command="{Binding ImportCardCommand}"
-            Content="Import"/>
-        <Button
-            x:Name="btnExport"
-            Grid.Row="2"
-            Grid.Column="0"
-            HorizontalAlignment="Center"
-            Margin="100,0,0,0"
-            Height="25"
-            FontSize="12"
-            ClickMode="Release"
-            Command="{Binding ExportCardCommand}"
-            Content="Export"/>
-
         <Label
             Grid.Row="2"
             Grid.Column="1"

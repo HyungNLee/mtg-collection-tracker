@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -119,16 +116,6 @@ namespace DesktopApp.MVVM.ViewModel
         public DelegateCommand AddSideboardCommand { get; set; }
 
         /// <summary>
-        /// Command to import owned cards.
-        /// </summary>
-        public DelegateCommand ImportCardCommand { get; private set; }
-
-        /// <summary>
-        /// Command export owned cards.
-        /// </summary>
-        public DelegateCommand ExportCardCommand { get; private set; }
-
-        /// <summary>
         /// Command to open up the AddCollectionDialogWindow.
         /// </summary>
         public DelegateCommand ShowAddCollectionDialogCommand { get; private set; }
@@ -150,8 +137,6 @@ namespace DesktopApp.MVVM.ViewModel
             FilteredOwnedCards = new ObservableCollection<OwnedCardPrintAggregate>();
 
             AddSideboardCommand = new DelegateCommand(async () => await AddSideboardAsync());
-            ImportCardCommand = new DelegateCommand(async () => await ImportOwnedCardsJsonAsync());
-            ExportCardCommand = new DelegateCommand(async () => await ExportOwnedCardsJsonAsync());
             ShowAddCollectionDialogCommand = new DelegateCommand(() => ShowAddCollectionDialog());
             ShowDeleteCollectionDialogCommand = new DelegateCommand(() => ShowDeleteCollectionDialog());
 
@@ -467,109 +452,6 @@ namespace DesktopApp.MVVM.ViewModel
                 return true;
             else
                 return item.CardName.Contains(CardTextSearch, StringComparison.OrdinalIgnoreCase);
-        }
-
-        private async Task ExportOwnedCardsJsonAsync()
-        {
-            Log.Debug($"{nameof(CollectionViewModel)}: {nameof(ExportOwnedCardsJsonAsync)}");
-
-            try
-            {
-                var ownedCards = await _collectionService.GetOwnedCardsExportFormatAsync();
-                var jsonSerialized = JsonSerializer.Serialize(ownedCards);
-
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "OwnedCardsExport.json");
-                File.WriteAllText(filePath, jsonSerialized);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, $"{nameof(CollectionViewModel)}: {nameof(ExportOwnedCardsJsonAsync)}");
-                throw;
-            }
-        }
-
-        private async Task ImportOwnedCardsJsonAsync()
-        {
-            Log.Debug($"{nameof(CollectionViewModel)}: {nameof(ImportOwnedCardsJsonAsync)}");
-
-            try
-            {
-                // Create backup of database first.
-                var backupFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "backups");
-                Directory.CreateDirectory(backupFolderPath);
-
-                // Copy database
-                var backupDbPath = Path.Combine(backupFolderPath, SQLiteDatabaseCreator.DatabaseName);
-                File.Copy(SQLiteDatabaseCreator.DatabaseFilePath, backupDbPath, true);
-
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "OwnedCardsExport.json");
-
-                var jsonText = File.ReadAllText(filePath);
-                var ownedCards = JsonSerializer.Deserialize<IEnumerable<DataAccessModels.OwnedCardExport>>(jsonText)
-                    ?? Enumerable.Empty<DataAccessModels.OwnedCardExport>();
-
-                string sideboardIdentifier = " - Sideboard";
-                foreach (var ownedCard in ownedCards)
-                {
-                    var foundCollection = await _collectionService.GetCollectionAsync(ownedCard.CollectionName);
-                    if (foundCollection == null)
-                    {
-                        // Check if sideboard
-                        if (ownedCard.CollectionName.Contains(sideboardIdentifier))
-                        {
-                            var cutoffIndex = ownedCard.CollectionName.LastIndexOf(sideboardIdentifier);
-                            var mainboardName = ownedCard.CollectionName.Substring(0, cutoffIndex);
-                            var foundMainboardCollection = await _collectionService.GetCollectionAsync(mainboardName);
-
-                            if (foundMainboardCollection == null)
-                            {
-                                var collectionRequest = new DataAccessModels.AddCollectionRequest
-                                {
-                                    IsDeck = true,
-                                    Name = mainboardName
-                                };
-                                await _collectionService.AddCollectionAsync(collectionRequest);
-                                foundMainboardCollection = await _collectionService.GetCollectionAsync(mainboardName);
-                            }
-
-                            var sideboardId = await _collectionService.AddDeckSideboardAsync(foundMainboardCollection.Id);
-                        }
-                        else
-                        {
-                            var collectionRequest = new DataAccessModels.AddCollectionRequest
-                            {
-                                IsDeck = ownedCard.IsDeck,
-                                Name = ownedCard.CollectionName
-                            };
-                            await _collectionService.AddCollectionAsync(collectionRequest);
-                        }
-
-                        foundCollection = await _collectionService.GetCollectionAsync(ownedCard.CollectionName);
-                    }
-
-                    var cardPrintDetails = await _cardPrintService.GetCardPrintDetailAsync(ownedCard.CardName, ownedCard.SetName);
-
-                    for (int i = 0; i < ownedCard.Count; i++)
-                    {
-                        var ownedCardRequest = new DataAccessModels.OwnedCardRequest
-                        {
-                            CardPrintId = cardPrintDetails.Id,
-                            CollectionId = foundCollection.Id,
-                            IsFoil = ownedCard.IsFoil
-                        };
-
-                        await _collectionService.AddOwnedCardAsync(ownedCardRequest);
-                    }
-                }
-
-                await LoadOwnedCardsByCollectionAsync();
-                await LoadCollectionsAsync();
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, $"{nameof(CollectionViewModel)}: {nameof(ImportOwnedCardsJsonAsync)}");
-                throw;
-            }
         }
 
         /// <summary>

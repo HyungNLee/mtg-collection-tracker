@@ -4,9 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DesktopApp.MVVM.Controls"
+             xmlns:viewmodel="clr-namespace:DesktopApp.MVVM.ViewModel"
              mc:Ignorable="d" 
              d:DesignHeight="30"
              d:DesignWidth="200">
+
+    <UserControl.DataContext>
+        <viewmodel:MainMenuBarViewModel />
+    </UserControl.DataContext>
 
     <UserControl.Resources>
         <Style
@@ -56,10 +61,12 @@
                 Style="{StaticResource TopMenuItem}">
                 <MenuItem
                     Header="_Import Owned Cards"
-                    Style="{StaticResource NestedMenuItem}"/>
+                    Style="{StaticResource NestedMenuItem}"
+                    Command="{Binding ImportCardCommand}"/>
                 <MenuItem
                     Header="_Export Owned Cards"
-                    Style="{StaticResource NestedMenuItem}"/>
+                    Style="{StaticResource NestedMenuItem}"
+                    Command="{Binding ExportCardCommand}"/>
             </MenuItem>
         </Menu>
     </DockPanel>
