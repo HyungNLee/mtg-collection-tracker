@@ -27,6 +27,7 @@
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
             <RowDefinition />
             <RowDefinition Height="5"/>
             <RowDefinition />
@@ -38,23 +39,25 @@
             <ColumnDefinition Width="600"/>
         </Grid.ColumnDefinitions>
 
-        <Frame Grid.Row="0" Grid.Column="0">
+        <controls:MainMenuBar Grid.Row="0" Grid.ColumnSpan="3" />
+
+        <Frame Grid.Row="1" Grid.Column="0">
             <Frame.Content>
                 <view:CollectionView />
             </Frame.Content>
         </Frame>
 
-        <Frame Grid.Row="0" Grid.Column="2" Grid.RowSpan="3">
+        <Frame Grid.Row="1" Grid.Column="2" Grid.RowSpan="3">
             <Frame.Content>
                 <view:SelectedCardPrintView />
             </Frame.Content>
         </Frame>
 
-        <GridSplitter Grid.Row="1" Grid.Column="0" Height="5" HorizontalAlignment="Stretch"/>
+        <GridSplitter Grid.Row="2" Grid.Column="0" Height="5" HorizontalAlignment="Stretch"/>
 
-        <GridSplitter Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+        <GridSplitter Grid.Row="1" Grid.RowSpan="3" Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
 
-        <Frame Grid.Row="2" Grid.Column="0">
+        <Frame Grid.Row="3" Grid.Column="0">
             <Frame.Content>
                 <view:MagicDatabaseView />
             </Frame.Content>
