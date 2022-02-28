@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:DesktopApp.MVVM.View"
         mc:Ignorable="d"
         Title="Create Collection"
+        WindowStartupLocation="CenterScreen"
         MinHeight="200"
         MinWidth="400"
         SizeToContent="WidthAndHeight"

@@ -1,6 +1,6 @@
 ﻿namespace DesktopApp.MVVM.Model
 {
-    internal class CardCollection
+    public class CardCollection
     {
         public int Id { get; set; }
         public string Name { get; set; }

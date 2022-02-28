@@ -72,7 +72,7 @@ namespace DesktopApp.MVVM.ViewModel
                 return;
             }
 
-            var cards = await _collectionService.GetOwnedCardsAggregatesAsyncByCardId(SelectedCardPrint.CardId);
+            var cards = await _collectionService.GetOwnedCardsAggregatesByCardIdAsync(SelectedCardPrint.CardId);
 
             OwnedCards.Clear();
 

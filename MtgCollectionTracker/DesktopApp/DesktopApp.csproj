@@ -12,6 +12,7 @@
   <ItemGroup>
     <None Remove="Resources\PlusButton.png" />
     <None Remove="Resources\SideboardButton.png" />
+    <None Remove="Resources\TransferButton.png" />
     <None Remove="Resources\TrashButton.png" />
   </ItemGroup>
 
@@ -36,6 +37,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\SideboardButton.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\TransferButton.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\TrashButton.png">

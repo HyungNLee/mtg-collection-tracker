@@ -25,22 +25,12 @@ namespace DataAccess.Services
         Task<int> AddOwnedCardAsync(OwnedCardRequest request);
 
         /// <summary>
-        /// Deletes a collection.
-        /// All cards in the collection will be moved to the main collection.
-        /// If the collection is a deck, the sideboard will also be deleted.
-        /// </summary>
-        /// <param name="collectionId"></param>
-        /// <returns></returns>
-        Task RemoveCollection(int collectionId);
-
-        /// <summary>
         /// Deletes the given number of matching card prints in the given set.
         /// </summary>
         /// <param name="request"></param>
         /// <param name="numberToDelete"></param>
         /// <returns></returns>
         Task DeleteOwnedCardsAsync(OwnedCardRequest request, int numberToDelete);
-
 
         /// <summary>
         /// Gets a collection by the Id.
@@ -73,12 +63,28 @@ namespace DataAccess.Services
         /// </summary>
         /// <param name="cardId"></param>
         /// <returns>Returns a collection. If no entries are found, will return an empty collection.</returns>
-        Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesAsyncByCardId(int cardId);
+        Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesByCardIdAsync(int cardId);
 
         /// <summary>
         /// Gets the aggregate owned card details by collection Id.
         /// </summary>
         /// <returns>Returns a collection. If no entries are found, will return an empty collection.</returns>
-        Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesAsyncByCollectionId(int collectionId);
+        Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesByCollectionIdAsync(int collectionId);
+
+        /// <summary>
+        /// Deletes a collection.
+        /// All cards in the collection will be moved to the main collection.
+        /// If the collection is a deck, the sideboard will also be deleted.
+        /// </summary>
+        /// <param name="collectionId"></param>
+        /// <returns></returns>
+        Task RemoveCollectionAsync(int collectionId);
+
+        /// <summary>
+        /// Transfers cards from one collection to another.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        Task TransferCardsAsync(TransferCardRequest request);
     }
 }
