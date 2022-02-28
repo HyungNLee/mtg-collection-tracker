@@ -18,6 +18,7 @@ namespace DataAccess.Sqlite
             SQLiteDatabaseCreator.CreateDatabaseIfNotExists();
         }
 
+        #region ICollectionService Implementation
         public async Task<int> AddCollectionAsync(AddCollectionRequest request)
         {
             Log.Debug($"{nameof(SQLiteCollectionService)}: {nameof(AddCollectionAsync)}");
@@ -149,75 +150,6 @@ namespace DataAccess.Sqlite
             }
         }
 
-        public async Task RemoveCollection(int collectionId)
-        {
-            Log.Debug($"{nameof(SQLiteCollectionService)}: {nameof(RemoveCollection)}");
-
-            int mainCollectionId = 1;
-
-            var foundCollection = await GetCollectionAsync(collectionId);
-            if (foundCollection == null)
-            {
-                throw new InvalidOperationException("Collection does not exist.");
-            }
-
-            if (foundCollection.Id == mainCollectionId)
-            {
-                throw new InvalidOperationException("The main collection cannot be deleted.");
-            }
-
-            // If collection is a sideboard
-            if (foundCollection.IsDeck && foundCollection.MainboardId.HasValue)
-            {
-                // Move cards to mainboard
-                await TransferCollectionAsync(collectionId, mainCollectionId);
-
-                // Delete sideboard
-                await DeleteCollectionAsync(collectionId);
-
-                // Update mainboard's sideboard Id to null
-                var sql = @"
-                update [Collection]
-                set SideboardId = null
-                where
-                    Id = @Id;";
-
-                try
-                {
-                    var parameters = new DynamicParameters();
-                    parameters.Add("@Id", foundCollection.MainboardId.Value);
-
-                    using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
-                    await dbConnection.ExecuteAsync(
-                        sql: sql,
-                        param: parameters);
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, $"{nameof(SQLiteCollectionService)}: {nameof(RemoveCollection)}");
-                    throw;
-                }
-            }
-            // If collection is a mainboard deck and has a sideboard
-            else if (foundCollection.IsDeck && foundCollection.SideboardId.HasValue)
-            {
-                // Move sideboard cards to main collection and delete
-                await TransferCollectionAsync(foundCollection.SideboardId.Value, mainCollectionId);
-                await DeleteCollectionAsync(foundCollection.SideboardId.Value);
-
-                // Move mainboard cards to main collection and delete
-                await TransferCollectionAsync(collectionId, mainCollectionId);
-                await DeleteCollectionAsync(collectionId);
-            }
-            // If a collection or deck without a sidebard
-            else
-            {
-                // Move cards to main collection and delete
-                await TransferCollectionAsync(collectionId, mainCollectionId);
-                await DeleteCollectionAsync(collectionId);
-            }
-        }
-
         public async Task DeleteOwnedCardsAsync(OwnedCardRequest request, int numberToDelete)
         {
             Log.Debug($"{nameof(SQLiteCollectionService)}: {nameof(DeleteOwnedCardsAsync)}");
@@ -335,9 +267,9 @@ namespace DataAccess.Sqlite
             }
         }
 
-        public async Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesAsyncByCardId(int cardId)
+        public async Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesByCardIdAsync(int cardId)
         {
-            Log.Debug($"{nameof(SQLiteCollectionService)}: {nameof(GetOwnedCardsAggregatesAsyncByCardId)}");
+            Log.Debug($"{nameof(SQLiteCollectionService)}: {nameof(GetOwnedCardsAggregatesByCardIdAsync)}");
 
             var storedProcedure = @"
                 select
@@ -371,14 +303,14 @@ namespace DataAccess.Sqlite
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"{nameof(SQLiteCollectionService)}: {nameof(GetOwnedCardsAggregatesAsyncByCardId)}");
+                Log.Error(ex, $"{nameof(SQLiteCollectionService)}: {nameof(GetOwnedCardsAggregatesByCardIdAsync)}");
                 throw;
             }
         }
 
-        public async Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesAsyncByCollectionId(int collectionId)
+        public async Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesByCollectionIdAsync(int collectionId)
         {
-            Log.Debug($"{nameof(SQLiteCollectionService)}: {nameof(GetOwnedCardsAggregatesAsyncByCollectionId)}");
+            Log.Debug($"{nameof(SQLiteCollectionService)}: {nameof(GetOwnedCardsAggregatesByCollectionIdAsync)}");
 
             var storedProcedure = @"
                 select
@@ -412,7 +344,7 @@ namespace DataAccess.Sqlite
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"{nameof(SQLiteCollectionService)}: {nameof(GetOwnedCardsAggregatesAsyncByCollectionId)}");
+                Log.Error(ex, $"{nameof(SQLiteCollectionService)}: {nameof(GetOwnedCardsAggregatesByCollectionIdAsync)}");
                 throw;
             }
 
@@ -450,6 +382,111 @@ namespace DataAccess.Sqlite
                 throw;
             }
         }
+
+
+        public async Task RemoveCollectionAsync(int collectionId)
+        {
+            Log.Debug($"{nameof(SQLiteCollectionService)}: {nameof(RemoveCollectionAsync)}");
+
+            int mainCollectionId = 1;
+
+            var foundCollection = await GetCollectionAsync(collectionId);
+            if (foundCollection == null)
+            {
+                throw new InvalidOperationException("Collection does not exist.");
+            }
+
+            if (foundCollection.Id == mainCollectionId)
+            {
+                throw new InvalidOperationException("The main collection cannot be deleted.");
+            }
+
+            // If collection is a sideboard
+            if (foundCollection.IsDeck && foundCollection.MainboardId.HasValue)
+            {
+                // Move cards to mainboard
+                await TransferCollectionAsync(collectionId, mainCollectionId);
+
+                // Delete sideboard
+                await DeleteCollectionAsync(collectionId);
+
+                // Update mainboard's sideboard Id to null
+                var sql = @"
+                update [Collection]
+                set SideboardId = null
+                where
+                    Id = @Id;";
+
+                try
+                {
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@Id", foundCollection.MainboardId.Value);
+
+                    using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
+                    await dbConnection.ExecuteAsync(
+                        sql: sql,
+                        param: parameters);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, $"{nameof(SQLiteCollectionService)}: {nameof(RemoveCollectionAsync)}");
+                    throw;
+                }
+            }
+            // If collection is a mainboard deck and has a sideboard
+            else if (foundCollection.IsDeck && foundCollection.SideboardId.HasValue)
+            {
+                // Move sideboard cards to main collection and delete
+                await TransferCollectionAsync(foundCollection.SideboardId.Value, mainCollectionId);
+                await DeleteCollectionAsync(foundCollection.SideboardId.Value);
+
+                // Move mainboard cards to main collection and delete
+                await TransferCollectionAsync(collectionId, mainCollectionId);
+                await DeleteCollectionAsync(collectionId);
+            }
+            // If a collection or deck without a sidebard
+            else
+            {
+                // Move cards to main collection and delete
+                await TransferCollectionAsync(collectionId, mainCollectionId);
+                await DeleteCollectionAsync(collectionId);
+            }
+        }
+
+        public async Task TransferCardsAsync(TransferCardRequest request)
+        {
+            Log.Debug($"{nameof(SQLiteCollectionService)}: {nameof(RemoveCollectionAsync)}");
+
+            var sql = @"
+                update [OwnedCard]
+                set CollectionId = @DestinationCollectionId
+                where
+                    CardPrintId = @CardPrintId
+                    and CollectionId = @SourceCollectionId
+                    and IsFoil = @IsFoil
+                limit @Count;";
+
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@DestinationCollectionId", request.DestinationCollectionId);
+                parameters.Add("@SourceCollectionId", request.SourceCollectionId);
+                parameters.Add("@IsFoil", request.IsFoil);
+                parameters.Add("@Count", request.Count);
+                parameters.Add("@CardPrintId", request.CardPrintId);
+
+                using var dbConnection = new SQLiteConnection(SQLiteDatabaseCreator.GetConnectionString);
+                await dbConnection.ExecuteAsync(
+                    sql: sql,
+                    param: parameters);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"{nameof(SQLiteCollectionService)}: {nameof(TransferCollectionAsync)}");
+                throw;
+            }
+        }
+        #endregion
 
         /// <summary>
         /// Deletes a collection.

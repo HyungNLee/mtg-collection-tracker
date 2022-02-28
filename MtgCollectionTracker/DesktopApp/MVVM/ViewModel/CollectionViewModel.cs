@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -111,6 +112,22 @@ namespace DesktopApp.MVVM.ViewModel
         public int FilteredOwnedCardsSum => FilteredOwnedCards.Sum(card => card.Count);
 
         /// <summary>
+        /// Returns a list of all collections except the current selected collection.
+        /// </summary>
+        public List<CardCollection> OtherCollections
+        {
+            get
+            {
+                if (SelectedCollection == null)
+                {
+                    return Collections.ToList();
+                }
+
+                return Collections.Where(collection => collection.Id != SelectedCollection.Id).ToList();
+            }
+        }
+
+        /// <summary>
         /// Command to create a new sideboard.
         /// </summary>
         public DelegateCommand AddSideboardCommand { get; set; }
@@ -125,6 +142,11 @@ namespace DesktopApp.MVVM.ViewModel
         /// </summary>
         public DelegateCommand ShowDeleteCollectionDialogCommand { get; private set; }
 
+        /// <summary>
+        /// Command to show the TransferDialogWindow.
+        /// </summary>
+        public DelegateCommand ShowTransferDialogCommand { get; private set; }
+
         public CollectionViewModel()
         {
             Log.Debug($"{nameof(CollectionViewModel)}: Constructor");
@@ -138,7 +160,8 @@ namespace DesktopApp.MVVM.ViewModel
 
             AddSideboardCommand = new DelegateCommand(async () => await AddSideboardAsync());
             ShowAddCollectionDialogCommand = new DelegateCommand(() => ShowAddCollectionDialog());
-            ShowDeleteCollectionDialogCommand = new DelegateCommand(() => ShowDeleteCollectionDialog());
+            ShowDeleteCollectionDialogCommand = new DelegateCommand(async () => await ShowDeleteCollectionDialogAsync());
+            ShowTransferDialogCommand = new DelegateCommand(async () => await ShowTransferDialogAsync());
 
             var _ = LoadCollectionsAsync();
 
@@ -158,6 +181,12 @@ namespace DesktopApp.MVVM.ViewModel
             ApplicationEventManager.Instance.Subscribe<CreateCollectionRequestEvent>(async args =>
             {
                 await AddCollectionAsync(args.Name, args.IsDeck);
+            });
+
+            // Refresh all owned card data on receiving this event.
+            ApplicationEventManager.Instance.Subscribe<RefreshOwnedCardsEvent>(async args =>
+            {
+                await RefreshAllDataAsync();
             });
         }
 
@@ -277,7 +306,7 @@ namespace DesktopApp.MVVM.ViewModel
 
             OwnedCards.Clear();
 
-            var ownedCards = await _collectionService.GetOwnedCardsAggregatesAsyncByCollectionId(SelectedCollection.Id);
+            var ownedCards = await _collectionService.GetOwnedCardsAggregatesByCollectionIdAsync(SelectedCollection.Id);
 
             foreach (var card in ownedCards)
             {
@@ -469,9 +498,9 @@ namespace DesktopApp.MVVM.ViewModel
         /// <summary>
         /// Opens up a confirmation dialog window to delete a collection.
         /// </summary>
-        private async void ShowDeleteCollectionDialog()
+        private async Task ShowDeleteCollectionDialogAsync()
         {
-            Log.Debug($"{nameof(CollectionViewModel)}: {nameof(ShowDeleteCollectionDialog)}");
+            Log.Debug($"{nameof(CollectionViewModel)}: {nameof(ShowDeleteCollectionDialogAsync)}");
 
             if (SelectedCollection == null)
             {
@@ -492,7 +521,7 @@ namespace DesktopApp.MVVM.ViewModel
 
             if (MessageBox.Show(message, "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Stop) == MessageBoxResult.Yes)
             {
-                await _collectionService.RemoveCollection(SelectedCollection.Id);
+                await _collectionService.RemoveCollectionAsync(SelectedCollection.Id);
 
                 await RefreshAllDataAsync();
             }
@@ -512,6 +541,39 @@ namespace DesktopApp.MVVM.ViewModel
 
             // Refreshes the selected card datagrid.
             ApplicationEventManager.Instance.Publish(new CardOperationSuccessEvent());
+        }
+
+        private async Task ShowTransferDialogAsync()
+        {
+            Log.Debug($"{nameof(CollectionViewModel)}: {nameof(ShowDeleteCollectionDialogAsync)}");
+
+            if (SelectedCollection == null || SelectedOwnedCard == null)
+            {
+                return;
+            }
+
+            var dialogWindow = new TransferOwnedCardDialogWindow(OtherCollections, SelectedOwnedCard);
+            var dialogResult = dialogWindow.ShowDialog();
+
+            if (dialogResult.HasValue && dialogResult.Value)
+            {
+                var transferCount = dialogWindow.TransferCount;
+                var destinationCollection = dialogWindow.DestinationCollection;
+
+                var newRequest = new DataAccessModels.TransferCardRequest
+                {
+                    CardPrintId = SelectedOwnedCard.CardPrintId,
+                    Count = transferCount,
+                    DestinationCollectionId = destinationCollection.Id,
+                    IsFoil = SelectedOwnedCard.IsFoil,
+                    SourceCollectionId = SelectedCollection.Id
+                };
+
+                await _collectionService.TransferCardsAsync(newRequest);
+
+                await LoadOwnedCardsByCollectionAsync();
+                ApplicationEventManager.Instance.Publish(new CardOperationSuccessEvent());
+            }
         }
     }
 }

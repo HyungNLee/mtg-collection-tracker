@@ -2,7 +2,7 @@
 
 namespace DesktopApp.MVVM.Model
 {
-    internal class OwnedCardPrintAggregate : BindableBase
+    public class OwnedCardPrintAggregate : BindableBase
     {
         public int CardId { get; set; }
         public string CardName { get; set; }

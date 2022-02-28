@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using DataAccess.Services;
 using DataAccess.Sqlite;
 
+using DesktopApp.Event;
+using DesktopApp.Event.EventModels;
+
 using Prism.Commands;
 using Prism.Mvvm;
 
@@ -137,7 +140,7 @@ namespace DesktopApp.MVVM.ViewModel
                     }
                 }
 
-                // TODO: Create event to refresh collection.
+                ApplicationEventManager.Instance.Publish(new RefreshOwnedCardsEvent());
             }
             catch (Exception ex)
             {

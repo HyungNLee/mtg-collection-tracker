@@ -108,9 +108,9 @@ namespace DataAccess.Services
             }
         }
 
-        public Task RemoveCollection(int collectionId)
+        public Task RemoveCollectionAsync(int collectionId)
         {
-            Log.Debug($"{nameof(CollectionService)}: {nameof(RemoveCollection)}");
+            Log.Debug($"{nameof(CollectionService)}: {nameof(RemoveCollectionAsync)}");
 
             throw new NotImplementedException();
         }
@@ -178,9 +178,9 @@ namespace DataAccess.Services
             }
         }
 
-        public async Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesAsyncByCardId(int cardId)
+        public async Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesByCardIdAsync(int cardId)
         {
-            Log.Debug($"{nameof(CollectionService)}: {nameof(GetOwnedCardsAggregatesAsyncByCardId)}");
+            Log.Debug($"{nameof(CollectionService)}: {nameof(GetOwnedCardsAggregatesByCardIdAsync)}");
 
             var storedProcedure = "ivw_OwnedCardSum_Details_SelectBy_CardId";
 
@@ -199,14 +199,14 @@ namespace DataAccess.Services
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"{nameof(CollectionService)}: {nameof(GetOwnedCardsAggregatesAsyncByCardId)}");
+                Log.Error(ex, $"{nameof(CollectionService)}: {nameof(GetOwnedCardsAggregatesByCardIdAsync)}");
                 throw;
             }
         }
 
-        public async Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesAsyncByCollectionId(int collectionId)
+        public async Task<IEnumerable<OwnedCardPrintAggregate>> GetOwnedCardsAggregatesByCollectionIdAsync(int collectionId)
         {
-            Log.Debug($"{nameof(CollectionService)}: {nameof(GetOwnedCardsAggregatesAsyncByCollectionId)}");
+            Log.Debug($"{nameof(CollectionService)}: {nameof(GetOwnedCardsAggregatesByCollectionIdAsync)}");
 
             var storedProcedure = "ivw_OwnedCardSum_Details_SelectBy_CollectionId";
 
@@ -225,7 +225,7 @@ namespace DataAccess.Services
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"{nameof(CollectionService)}: {nameof(GetOwnedCardsAggregatesAsyncByCollectionId)}");
+                Log.Error(ex, $"{nameof(CollectionService)}: {nameof(GetOwnedCardsAggregatesByCollectionIdAsync)}");
                 throw;
             }
         }
@@ -250,6 +250,11 @@ namespace DataAccess.Services
                 Log.Error(ex, $"{nameof(CollectionService)}: {nameof(GetOwnedCardsExportFormatAsync)}");
                 throw;
             }
+        }
+
+        public Task TransferCardsAsync(TransferCardRequest request)
+        {
+            throw new NotImplementedException();
         }
     }
 }

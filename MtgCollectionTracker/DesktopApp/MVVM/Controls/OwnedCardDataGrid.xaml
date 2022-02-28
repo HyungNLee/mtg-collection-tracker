@@ -13,7 +13,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="25"/>
             <RowDefinition/>
-            <RowDefinition Height="35"/>
+            <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -43,7 +43,6 @@
                 <KeyBinding Key="Subtract" Command="{Binding DeleteSingleSelectedOwnedCard}"/>
                 <KeyBinding Key="OemMinus" Command="{Binding DeleteSingleSelectedOwnedCard}"/>
                 <KeyBinding Key="Delete" Command="{Binding DeleteAllSelectedOwnedCard}"/>
-
             </DataGrid.InputBindings>
 
             <DataGrid.Columns>
@@ -55,18 +54,35 @@
 
         </DataGrid>
 
+        <StackPanel
+            Grid.Row="2"
+            Grid.Column="0"
+            Orientation="Horizontal"
+            VerticalAlignment="Center">
+            <Button
+                x:Name="btnTransferCard"
+                Margin="3"
+                ClickMode="Release"
+                Command="{Binding ShowTransferDialogCommand}"
+                ToolTip="Transfer card to another collection.">
+                <Image Source="pack://application:,,,/MtgCollectionTracker;component/Resources/TransferButton.png" />
+            </Button>
+        </StackPanel>
+
         <Label
             Grid.Row="2"
             Grid.Column="1"
             HorizontalAlignment="Right"
             VerticalAlignment="Center"
             Margin="0,0,40,0"
+            FontWeight="Bold"
             Content="Total Cards: " />
         <Label
             Grid.Row="2"
             Grid.Column="1"
             HorizontalAlignment="Right"
             VerticalAlignment="Center"
+            FontWeight="Bold"
             Content="{Binding FilteredOwnedCardsSum}"/>
 
     </Grid>
